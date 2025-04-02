@@ -1,0 +1,139 @@
+// _default.scss
+// 
+// Template's default layout styles.
+// 
+
+body {
+	padding: 0;
+	background-color: $color-gray-2;
+}
+
+// Default Layout
+.layout-default {
+	background: transparent;
+	text-align: left;
+	position: relative;
+	overflow-x: hidden;
+
+	@media(min-width: $lg) {
+		overflow: auto;
+	}
+
+	.ant-layout-content {
+		padding-top: 0;
+	}
+
+	.ant-layout-footer {
+		padding: 24px 0px;
+		color: rgba(0, 0, 0, 0.65);
+		font-size: 14px;
+		background: transparent;
+		text-align: center;
+
+		@media(min-width: $md) {
+			padding: 24px 50px;
+		}
+
+		.ant-menu-horizontal {
+			border: none;
+			line-height: 1.5;
+			margin: 0 0 30px;
+			background-color: transparent;
+			font-size: 16px;
+
+			>.ant-menu-item,
+			>.ant-menu-item:hover,
+			>.ant-menu-item-active,
+			>.ant-menu-item-selected,
+			>.ant-menu-submenu,
+			>.ant-menu-submenu:hover,
+			>.ant-menu-submenu-active,
+			>.ant-menu-submenu-selected {
+				color: $color-gray-7;
+				border: none;
+			}
+
+			>.ant-menu-item:hover,
+			>.ant-menu-item-active,
+			>.ant-menu-item-selected,
+			>.ant-menu-submenu:hover,
+			>.ant-menu-submenu-active,
+			>.ant-menu-submenu-selected {
+				color: $color-gray-10;
+			}
+
+			.ant-menu-submenu-title {
+				font-size: 16px;
+				font-weight: bold;
+			}
+		}
+
+		.menu-nav-social {
+			a svg {
+				fill: $color-muted;
+				vertical-align: middle;
+			}
+
+			a:hover svg {
+				fill: $color-primary;
+			}
+		}
+
+		.copyright {
+			margin: 0;
+			font-size: 16px;
+			color: $color-muted;
+
+			svg {
+				width: 16px;
+				height: 16px;
+				vertical-align: -2px;
+
+				path {
+					fill: $color-danger;
+				}
+			}
+
+			a {
+				color: inherit;
+			}
+		}
+	}
+}
+
+// 新增的所有keyframes动画
+@keyframes fadeInDown {
+	from {
+		opacity: 0;
+		transform: translate3d(0, -100%, 0);
+	}
+
+	to {
+		opacity: 1;
+		transform: translate3d(0, 0, 0);
+	}
+}
+
+@keyframes slideInDown {
+	from {
+		transform: translate3d(0, -30px, 0);
+		opacity: 0;
+	}
+
+	to {
+		transform: translate3d(0, 0, 0);
+		opacity: 1;
+	}
+}
+
+@keyframes slideOutUp {
+	from {
+		transform: translate3d(0, 0, 0);
+		opacity: 1;
+	}
+
+	to {
+		transform: translate3d(0, -30px, 0);
+		opacity: 0;
+	}
+}
