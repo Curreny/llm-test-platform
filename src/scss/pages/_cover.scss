@@ -301,9 +301,11 @@
 }
 
 .header-card {
-    margin-bottom: 2rem;
+    margin-bottom: 0rem;
     text-align: center;
-    background: linear-gradient(to right, rgba(243, 244, 246, 0.9), rgba(255, 255, 255, 0.9));
+    background-size: cover;
+    background-position: center;
+
     border-radius: 8px;
     padding: 3rem 0;
     backdrop-filter: blur(8px);

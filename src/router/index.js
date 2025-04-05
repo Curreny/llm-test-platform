@@ -27,6 +27,12 @@ let routes = [
 		component: () => import('../views/QuestionGenerate.vue'),
 	},
 	{
+		path: '/question-expansion',
+		name: 'QuestionExpansion',
+		layout: "simple",
+		component: () => import('../views/QuestionExpansion.vue'),
+	},
+	{
 		path: '/dashboard',
 		name: 'Dashboard',
 		layout: "dashboard",

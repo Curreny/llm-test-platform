@@ -157,7 +157,7 @@
 
           <!-- 观测题库拓展模块 -->
           <a-col :span="24" :md="12" :xl="8" class="mb-24">
-            <router-link to="/" class="card-link">
+            <router-link to="/question-expansion" class="card-link">
               <a-card :bordered="false" class="feature-card feature-purple">
                 <div class="feature-icon mb-4 icon-purple">
                   <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

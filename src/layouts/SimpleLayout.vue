@@ -6,31 +6,44 @@
 	<div>
 		<!-- Simple Layout -->
 		<a-layout class="layout-default" id="layout-default" :class="[layoutClass]">
-	
-			<!-- 左侧浮动导航目录 -->
-			<div class="side-nav-menu">
+			
+			<!-- 左侧固定导航 -->
+			<a-layout-sider 
+				class="side-nav"
+				theme="light"
+				width="250" 
+				:collapsed-width="64"
+				:trigger="null"
+				collapsible
+				:style="{height: '100%', position: 'fixed', left: 0}"
+			>
 				<div class="side-nav-header">
 					<img src="/images/logo-ct-black.png" alt="Logo">
 					<span>飞舞不会coding</span>
 				</div>
+				
+				<div class="nav-divider"></div>
 
 				<div class="side-nav-items">
 					<router-link to="/question-generate" class="side-nav-item">
 						<div class="side-nav-icon icon-primary">
-							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<path d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V7C19 5.89543 18.1046 5 17 5H15M9 5C9 6.10457 9.89543 7 11 7H13C14.1046 7 15 6.10457 15 5M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								<path d="M9 12H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								<path d="M9 16H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 							</svg>
 						</div>
 						<span>观测题库生成</span>
 					</router-link>
 					
-					<router-link to="/question-bank" class="side-nav-item">
+					<router-link to="/question-expansion" class="side-nav-item">
 						<div class="side-nav-icon icon-purple">
-							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<path d="M8 3V5M16 3V5M7 21H17C19.2091 21 21 19.2091 21 17V9C21 6.79086 19.2091 5 17 5H7C4.79086 5 3 6.79086 3 9V17C3 19.2091 4.79086 21 7 21Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								<path d="M8 9H16M8 13H14M8 17H12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 							</svg>
 						</div>
-						<span>观测题库查看</span>
+						<span>观测题库拓展</span>
 					</router-link>
 					
 					<router-link to="/data-audit" class="side-nav-item">
@@ -44,9 +57,10 @@
 					
 					<router-link to="/results" class="side-nav-item">
 						<div class="side-nav-icon icon-warning">
-							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="nav-svg">
 								<path d="M21 21H4C3.44772 21 3 20.5523 3 20V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 								<path d="M7 14L11 10L15 14L21 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								<path d="M21 8V14H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 							</svg>
 						</div>
 						<span>结果生成模块</span>
@@ -54,8 +68,11 @@
 					
 					<router-link to="/reports" class="side-nav-item">
 						<div class="side-nav-icon icon-info">
-							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="nav-svg">
 								<path d="M19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								<path d="M7 7H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								<path d="M7 12H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								<path d="M7 17H13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 							</svg>
 						</div>
 						<span>自动化报告生成</span>
@@ -69,71 +86,76 @@
 						</div>
 						<span>观测调用形式</span>
 					</router-link>
+					
+					<div class="nav-divider"></div>
+					
+					<router-link to="/" class="side-nav-item" exact>
+						<div class="side-nav-icon icon-primary">
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M3 12L5 10M5 10L12 3L19 10M5 10V20C5 20.5523 5.44772 21 6 21H9M19 10L21 12M19 10V20C19 20.5523 18.5523 21 18 21H15M9 21C9.55228 21 10 20.5523 10 20V16C10 15.4477 10.4477 15 11 15H13C13.5523 15 14 15.4477 14 16V20C14 20.5523 14.4477 21 15 21M9 21H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							</svg>
+						</div>
+						<span>返回主页</span>
+					</router-link>
 				</div>
-			</div>
+			</a-layout-sider>
 
-			<!-- Page Content -->
-			<a-layout-content class="content-with-sidebar">
-				<router-view />
-			</a-layout-content>
-			<!-- / Page Content -->
+			<a-layout class="main-content">
+				<!-- 页眉 -->
+				<a-layout-header class="header">
+					<a-row type="flex">
+						<!-- 面包屑与页面标题 -->
+						<a-col :span="24" :md="8">
+							<a-breadcrumb>
+								<a-breadcrumb-item><router-link to="/"> Pages</router-link></a-breadcrumb-item>
+								<a-breadcrumb-item>{{ $route.name }}</a-breadcrumb-item>
+							</a-breadcrumb>
+							
+							<div class="page-header-heading">
+								<span class="page-header-heading-title">{{ $route.name }}</span>
+							</div>
+						</a-col>
+						
+						<!-- 控制区域 -->
+						<a-col :span="24" :md="16" class="header-control">
+							<!-- 搜索框 -->
+							<a-input-search class="header-search" placeholder="输入搜索内容...">
+								<svg slot="prefix" width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path fill-rule="evenodd" clip-rule="evenodd" d="M8 4C5.79086 4 4 5.79086 4 8C4 10.2091 5.79086 12 8 12C10.2091 12 12 10.2091 12 8C12 5.79086 10.2091 4 8 4ZM2 8C2 4.68629 4.68629 2 8 2C11.3137 2 14 4.68629 14 8C14 9.29583 13.5892 10.4957 12.8907 11.4765L17.7071 16.2929C18.0976 16.6834 18.0976 17.3166 17.7071 17.7071C17.3166 18.0976 16.6834 18.0976 16.2929 17.7071L11.4765 12.8907C10.4957 13.5892 9.29583 14 8 14C4.68629 14 2 11.3137 2 8Z" fill="#111827"/>
+								</svg>
+							</a-input-search>
+							
+							<!-- 通知按钮 -->
+							<a-dropdown overlayClassName="header-notifications-dropdown">
+								<a-badge count="2">
+									<a class="ant-dropdown-link">
+										<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+											<path d="M10 2C6.68632 2 4.00003 4.68629 4.00003 8V11.5858L3.29292 12.2929C3.00692 12.5789 2.92137 13.009 3.07615 13.3827C3.23093 13.7564 3.59557 14 4.00003 14H16C16.4045 14 16.7691 13.7564 16.9239 13.3827C17.0787 13.009 16.9931 12.5789 16.7071 12.2929L16 11.5858V8C16 4.68629 13.3137 2 10 2Z" fill="#111827"/>
+											<path d="M10 18C8.34315 18 7 16.6569 7 15H13C13 16.6569 11.6569 18 10 18Z" fill="#111827"/>
+										</svg>
+									</a>
+								</a-badge>
+							</a-dropdown>
+							
+							<!-- 用户登录按钮 -->
+							<router-link to="/sign-in" class="btn-sign-in">
+								<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path fill-rule="evenodd" clip-rule="evenodd" d="M18 10C18 14.4183 14.4183 18 10 18C5.58172 18 2 14.4183 2 10C2 5.58172 5.58172 2 10 2C14.4183 2 18 5.58172 18 10ZM12 7C12 8.10457 11.1046 9 10 9C8.89543 9 8 8.10457 8 7C8 5.89543 8.89543 5 10 5C11.1046 5 12 5.89543 12 7ZM9.99993 11C7.98239 11 6.24394 12.195 5.45374 13.9157C6.55403 15.192 8.18265 16 9.99998 16C11.8173 16 13.4459 15.1921 14.5462 13.9158C13.756 12.195 12.0175 11 9.99993 11Z" fill="#111827"/>
+								</svg>
+								<span>登录</span>
+							</router-link>
+						</a-col>
+					</a-row>
+				</a-layout-header>
 
-			<!-- 页脚部分 -->
-			<div class="footer-section">
-				<div class="footer-content">
-					<div class="footer-column-header">
-						<h3 class="footer-title">飞舞不会coding团队</h3>
-						<p class="footer-desc">致力于提供全面的大模型性能与安全观测解决方案，通过多维度评估、实时监控和智能分析，帮助用户全方位了解和优化大模型的表现与合规性。</p>
-					</div>
-					<div class="footer-column">
-						<h3 class="footer-title">关于我们</h3>
-						<ul class="footer-links">
-							<li><a href="#">平台介绍</a></li>
-							<li><a href="#">技术白皮书</a></li>
-							<li><a href="#">研究成果</a></li>
-							<li><a href="#">技术支持</a></li>
-						</ul>
-					</div>
-					<div class="footer-column">
-						<h3 class="footer-title">服务范围</h3>
-						<ul class="footer-links">
-							<li><a href="#">能力评估</a></li>
-							<li><a href="#">安全审核</a></li>
-							<li><a href="#">性能监控</a></li>
-							<li><a href="#">合规认证</a></li>
-						</ul>
-					</div>
-					<div class="footer-column">
-						<h3 class="footer-title">联系方式</h3>
-						<p class="footer-address">翻斗大街翻斗花园2号楼1001室</br>中国宇宙省星际市银河区太阳街八里香胡同11号</p>
-					</div>
-				</div>
-				<div class="footer-bottom">
-					<p class="copyright">版权所有 © 2024 飞舞不会coding</p>
-					<div class="contact">
-						<span>全天候服务热线: 400-800-8888</span>
-						<span class="contact-icon">
-							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-								<path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="1.5" />
-								<path d="M8 13V7L16 17V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-							</svg>
-						</span>
-						<span class="contact-icon">
-							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-								<path d="M17 2H7C4.23858 2 2 4.23858 2 7V17C2 19.7614 4.23858 22 7 22H17C19.7614 22 22 19.7614 22 17V7C22 4.23858 19.7614 2 17 2Z" stroke="currentColor" stroke-width="1.5" />
-								<path d="M16 11.3698C16.1234 12.2021 15.9812 13.052 15.5937 13.7989C15.2062 14.5458 14.5931 15.1512 13.8416 15.5295C13.0901 15.9077 12.2384 16.0394 11.4077 15.9057C10.5771 15.7721 9.80971 15.3799 9.21479 14.785C8.61987 14.1901 8.22768 13.4227 8.09402 12.592C7.96035 11.7614 8.09202 10.9097 8.47028 10.1582C8.84854 9.40667 9.45394 8.79355 10.2009 8.40605C10.9478 8.01856 11.7977 7.8764 12.63 7.99981C13.4789 8.1257 14.2648 8.52128 14.8716 9.12812C15.4785 9.73496 15.8741 10.5209 16 11.3698Z" stroke="currentColor" stroke-width="1.5" />
-								<path d="M17.5 6.5H17.51" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-							</svg>
-						</span>
-						<span class="contact-icon">
-							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-								<path d="M15 3.99988H9C7.34315 3.99988 6 5.34303 6 6.99988V18.9999C6 20.6567 7.34315 21.9999 9 21.9999H15C16.6569 21.9999 18 20.6567 18 18.9999V6.99988C18 5.34303 16.6569 3.99988 15 3.99988Z" stroke="currentColor" stroke-width="1.5" />
-								<path d="M12 18.0001H12.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-							</svg>
-						</span>
-					</div>
-				</div>
-			</div>
+				<!-- Page Content -->
+				<a-layout-content class="content-container">
+					<router-view />
+				</a-layout-content>
+				<!-- / Page Content -->
+
+				
+			</a-layout>
 		</a-layout>
 		<!-- / Simple Layout -->
 	</div>
@@ -157,41 +179,38 @@
 </script>
 
 <style lang="scss">
+/* 整体布局样式 */
+.layout-default {
+	display: flex;
+	min-height: 100vh;
+}
 
-
-/* 左侧浮动导航目录样式 */
-.side-nav-menu {
+/* 左侧固定导航样式 */
+.side-nav {
+	height: 100%;
+	background-color: #f5f5f5;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	z-index: 10;
 	position: fixed;
 	left: 0;
-	top: 0;
-	height: 100vh;
-	background-color: #fff;
-	box-shadow: 0 2px 22px 0 rgba(0, 0, 0, 0.1), 0 4px 20px 0 rgba(0, 0, 0, 0.08);
-	padding: 1rem 0;
-	color: #000;
-	z-index: 98;
-	width: 250px;
-	display: flex;
-	flex-direction: column;
 }
 
 .side-nav-header {
 	display: flex;
 	align-items: center;
-	padding: 0.75rem 1.5rem;
-	margin-bottom: 1rem;
-	border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+	padding: 16px;
+	border-bottom: 1px solid #f5f5f5;
 }
 
 .side-nav-header img {
-	width: 35px;
-	height: 35px;
-	margin-right: 10px;
+	width: 32px;
+	height: 32px;
+	margin-right: 12px;
 	border-radius: 6px;
 }
 
 .side-nav-header span {
-	font-size: 1.1rem;
+	font-size: 16px;
 	font-weight: 600;
 	white-space: nowrap;
 }
@@ -199,21 +218,21 @@
 .side-nav-items {
 	display: flex;
 	flex-direction: column;
-	gap: 0.3rem;
-	padding: 0 0.75rem;
+	gap: 10px;
+	padding: 16px;
 	overflow-y: auto;
-	flex: 1;
+	height: calc(100% - 64px);
 }
 
 .side-nav-item {
 	display: flex;
 	align-items: center;
-	padding: 0.75rem 0.75rem;
+	padding: 12px;
 	border-radius: 8px;
 	color: #111827;
 	text-decoration: none;
 	transition: all 0.3s ease;
-	font-size: 0.9rem;
+	font-size: 14px;
 	font-weight: 500;
 	
 	&:hover {
@@ -246,7 +265,7 @@
 	justify-content: center;
 	width: 24px;
 	height: 24px;
-	margin-right: 0.75rem;
+	margin-right: 12px;
 	transition: all 0.3s ease;
 	color: #111827;
 	
@@ -275,149 +294,137 @@
 	}
 }
 
-/* 主体内容区域留出侧边栏空间 */
-.content-with-sidebar {
+/* 主内容区域样式 */
+.main-content {
+	flex: 1;
+	background-color: #f5f5f5;
 	margin-left: 250px;
-	padding-top: 1px; /* 防止margin合并问题 */
+}
+
+/* 页眉样式 */
+.header {
+	background-color: #f5f5f5;
+	padding: 16px 24px;
+	height: auto;
+	line-height: 1.5;
+}
+
+.page-header-heading {
+	margin-top: 8px;
+}
+
+.page-header-heading-title {
+	font-size: 20px;
+	font-weight: 600;
+	color: #111827;
+}
+
+.header-control {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 16px;
+}
+
+.header-search {
+	max-width: 280px;
+	border-radius: 8px;
+}
+
+.btn-sign-in {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	border-radius: 6px;
+	color: #111827;
+	text-decoration: none;
+	transition: all 0.3s ease;
+	background-color: rgba(0, 0, 0, 0.02);
+	
+	&:hover {
+		background-color: rgba(0, 0, 0, 0.05);
+		color: #1890ff;
+	}
+	
+	svg {
+		margin-right: 4px;
+	}
+}
+
+.content-container {
+	padding: 24px;
+	min-height: 280px;
 }
 
 /* 页脚样式 */
-.footer-section {
-	background-color: #f5f5f5;
-	padding: 3rem 2rem 1rem 2rem;
-	margin-left: 250px;
-}
-
-.footer-content {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 2rem;
-	margin-bottom: 2rem;
-}
-
-.footer-column-header {
-	flex: 2;
-	min-width: 300px;
-}
-
-.footer-column {
-	flex: 1;
-	min-width: 200px;
-}
-
-.footer-title {
-	font-size: 1.2rem;
-	font-weight: 600;
-	margin-bottom: 1rem;
-	color: #303133;
-}
-
-.footer-desc {
-	color: #606266;
-	line-height: 1.6;
-}
-
-.footer-links {
-	list-style: none;
-	padding: 0;
-	margin: 0;
-}
-
-.footer-links li {
-	margin-bottom: 0.8rem;
-}
-
-.footer-links a {
-	text-decoration: none;
-	color: #606266;
-	transition: color 0.3s ease;
-}
-
-.footer-links a:hover {
-	color: #1890ff;
-}
-
-.footer-address {
-	color: #606266;
-	line-height: 1.6;
-}
-
-.footer-bottom {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding-top: 1.5rem;
-	border-top: 1px solid #e8e8e8;
+a-layout-footer {
+	background-color: transparent;
+	padding: 20px 24px 24px;
 }
 
 .copyright {
-	color: #909399;
-	margin: 0;
+	font-size: 14px;
+	color: #8c8c8c;
+	margin-bottom: 0;
+	margin-top: 12px;
 }
 
-.contact {
+.copyright a {
+	color: #8c8c8c;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.copyright a:hover {
+	color: #1890ff;
+}
+
+.copyright svg {
+	margin: 0 3px;
+	position: relative;
+	top: 4px;
+}
+
+.footer-control {
 	display: flex;
-	align-items: center;
-	gap: 1rem;
-	color: #909399;
+	justify-content: flex-end;
 }
 
-.contact-icon {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 32px;
-	height: 32px;
-	border-radius: 50%;
-	background-color: #f0f0f0;
-	transition: all 0.3s ease;
-	cursor: pointer;
+.ant-menu-horizontal {
+	border-bottom: none;
+	background-color: transparent;
 }
 
-.contact-icon:hover {
-	background-color: #e0e0e0;
+.ant-menu-horizontal > .ant-menu-item {
+	margin-right: 0;
+	padding: 0 10px;
+	color: #8c8c8c;
+	border-bottom: none;
+	font-size: 14px;
+	line-height: 38px;
+	height: 38px;
+}
+
+.ant-menu-horizontal > .ant-menu-item:hover {
+	color: #1890ff;
 }
 
 @media (max-width: 768px) {
-	.hero-navbar {
-		padding: 1rem;
+	.footer-control {
+		justify-content: flex-start;
+		margin-top: 12px;
 	}
 	
-	.navbar-links {
-		display: none;
+	.header-control {
+		justify-content: flex-start;
+		margin-top: 16px;
 	}
-	
-	.footer-bottom {
-		flex-direction: column;
-		gap: 1rem;
-	}
-	
-	.footer-content {
-		flex-direction: column;
-		gap: 2rem;
-	}
-	
-	/* 移动端响应式处理 */
-	.side-nav-menu {
-		width: 60px;
-	}
-	
-	.side-nav-header span, 
-	.side-nav-item span {
-		display: none;
-	}
-	
-	.side-nav-item {
-		justify-content: center;
-	}
-	
-	.side-nav-icon {
-		margin-right: 0;
-	}
-	
-	.content-with-sidebar,
-	.footer-section {
-		margin-left: 60px;
-	}
+}
+
+.nav-divider {
+	height: 1px;
+	background-color: rgba(0, 0, 0, 0.06);
+	margin: 8px 0;
 }
 </style> 
