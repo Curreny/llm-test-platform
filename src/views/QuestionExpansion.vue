@@ -36,7 +36,9 @@
                   <path d="M7 10L12 15M12 15L17 10M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
                 导入题库 
-                <a-badge v-if="originalQuestions.length > 0" :count="originalQuestions.length" :offset="[8, 0]" />
+                <span v-if="originalQuestions.length > 0" class="count-indicator">
+                  {{originalQuestions.length}} 题
+                </span>
               </span>
             </a-button>
             
@@ -983,5 +985,22 @@
   .highlight-text {
     color: #1890ff; /* Ant Design默认的主题蓝色 */
     cursor: pointer;
+  }
+
+  .count-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    line-height: 20px;
+    padding: 0 6px;
+    margin-left: 10px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+    background-color: #1890ff;
+    border-radius: 10px;
+    text-align: center;
   }
 </style>

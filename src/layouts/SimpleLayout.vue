@@ -17,14 +17,15 @@
 				collapsible
 				:style="{height: '100%', position: 'fixed', left: 0}"
 			>
-				<div class="side-nav-header">
-					<img src="/images/logo-ct-black.png" alt="Logo">
-					<span>飞舞不会coding</span>
-				</div>
-				
-				<div class="nav-divider"></div>
 
 				<div class="side-nav-items">
+					<div class="side-nav-header">
+						<img src="/images/logo-ct-black.png" alt="Logo">
+						<span>飞舞不会coding</span>
+					</div>
+				
+					<div class="nav-divider"></div>
+
 					<router-link to="/question-generate" class="side-nav-item">
 						<div class="side-nav-icon icon-primary">
 							<svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -219,7 +220,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
-	padding: 16px;
+	padding: 6px;
 	overflow-y: auto;
 	height: calc(100% - 64px);
 }
@@ -424,7 +425,7 @@ a-layout-footer {
 
 .nav-divider {
 	height: 1px;
-	background-color: rgba(0, 0, 0, 0.06);
+	background-color: rgba(0, 0, 0, 0.1);
 	margin: 8px 0;
 }
 </style> 
