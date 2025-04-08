@@ -178,7 +178,6 @@ class ExportManager:
                 df.to_excel(writer, sheet_name='题库', index=False)
                 
                 # 获取xlsxwriter工作簿和工作表对象
-                workbook = writer.book
                 worksheet = writer.sheets['题库']
                 
                 # 设置列宽
