@@ -60,7 +60,7 @@
                   <a-checkbox value="同义词替换">同义词替换</a-checkbox>
                 </div>
                 <div class="transform-checkbox">
-                  <a-checkbox value="选项扰动">选项扰动</a-checkbox>
+                  <a-checkbox value="选项扰动">选项扰动（只适用选择题）</a-checkbox>
                 </div>
                 <div class="transform-checkbox">
                   <a-checkbox value="上下文调整">上下文调整</a-checkbox>
@@ -211,7 +211,7 @@
             <a-col :span="24" :lg="8" class="mb-24">
               <WidgetCounter
                 title="题目数量"
-                :value="stats.totalQuestions"
+                :value="transformedQuestions.length"
                 :precision="0"
                 suffix="+"
                 icon="<svg width='22' height='22' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M17 1L21 5M21 5L17 9M21 5H7C4.79086 5 3 6.79086 3 9V9M7 23L3 19M3 19L7 15M3 19H17C19.2091 19 21 17.2091 21 15V15' stroke='#ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>"
@@ -248,14 +248,12 @@
               <h3 class="font-bold">题目变形预览</h3>
             </div>
             
-
-            
             <!-- 有变形结果时显示 -->
             <div v-if="transformedQuestions.length > 0 && !isTransforming">
               <!-- 筛选工具栏 -->
               <div class="filter-toolbar mb-15">
                 <a-row :gutter="16" type="flex" align="middle">
-                  <a-col :span="6">
+                  <a-col :span="4">
                     <a-input-search
                       placeholder="搜索题目关键词"
                       v-model="searchKeyword"
@@ -263,7 +261,7 @@
                       class="search-input"
                     />
                   </a-col>
-                  <a-col :span="6">
+                  <a-col :span="4">
                     <a-select v-model="filterType" style="width: 100%" placeholder="按题型筛选">
                       <a-select-option value="">全部题型</a-select-option>
                       <a-select-option value="single">选择题</a-select-option>
@@ -271,7 +269,7 @@
                       <a-select-option value="essay">问答题</a-select-option>
                     </a-select>
                   </a-col>
-                  <a-col :span="6">
+                  <a-col :span="4">
                     <a-select v-model="filterDomain" style="width: 100%" placeholder="按领域筛选">
                       <a-select-option value="">全部领域</a-select-option>
                       <a-select-option v-for="domain in domainStats" :key="domain.name" :value="domain.name">
@@ -279,12 +277,27 @@
                       </a-select-option>
                     </a-select>
                   </a-col>
-                  <a-col :span="6">
+                  <a-col :span="4">
                     <a-select v-model="filterSource" style="width: 100%" placeholder="按数据集来源筛选">
                       <a-select-option value="">全部来源</a-select-option>
                       <a-select-option v-for="source in sourceStats" :key="source.name" :value="source.name">
                         {{source.name}} ({{source.count}})
                       </a-select-option>
+                    </a-select>
+                  </a-col>
+                  <a-col :span="4">
+                    <a-select v-model="filterTransformationType" style="width: 100%" placeholder="按变形方式筛选">
+                      <a-select-option value="">全部变形方式</a-select-option>
+                      <a-select-option v-for="type in transformationTypeStats" :key="type.name" :value="type.name">
+                        {{type.name}} ({{type.count}})
+                      </a-select-option>
+                    </a-select>
+                  </a-col>
+                  <a-col :span="4">
+                    <a-select v-model="filterValidity" style="width: 100%" placeholder="按有效性筛选">
+                      <a-select-option value="">全部题目</a-select-option>
+                      <a-select-option value="valid">变形有效</a-select-option>
+                      <a-select-option value="invalid">变形无效</a-select-option>
                     </a-select>
                   </a-col>
                 </a-row>
@@ -317,7 +330,7 @@
                               {{item.transformationType}}
                             </a-tag>
                             <a-tag :color="item.is_valid ? 'green' : 'red'">
-                              {{item.is_valid ? '有效' : '无效'}} ({{Math.round((item.similarity_score || 0) * 100)}}%)
+                              {{item.is_valid ? '有效' : '无效'}}
                             </a-tag>
                           </div>
                           <div class="question-content">
@@ -352,7 +365,7 @@
                       </a-col>
                       
                       <a-col :span="12">
-                        <div class="transformed-question-section">
+                        <div class="transformed-question-section" :class="{'invalid-transformation': !item.is_valid}">
                           <div class="section-title">变形后题目</div>
                           <div class="question-content">
                             <div class="question-prompt">
@@ -424,7 +437,7 @@
                   </div>
                 </div>
               </div>
-
+              
                 <!-- 导出选项 -->
               <div class="export-options" v-if="transformedQuestions.length > 0">
                 <div class="form-label mb-10">
@@ -444,9 +457,10 @@
                       block 
                       @click="exportToJson" 
                       class="export-btn"
-                      :disabled="isTransforming"
+                      :disabled="isExporting"
+                      :loading="isExporting"
                     >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="export-icon">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="export-icon" v-if="!isExporting">
                         <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M7 10L12 15L17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -460,9 +474,10 @@
                       block 
                       @click="exportToExcel" 
                       class="export-btn"
-                      :disabled="isTransforming"
+                      :disabled="isExporting"
+                      :loading="isExporting"
                     >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="export-icon">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="export-icon" v-if="!isExporting">
                         <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M7 10L12 15L17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -524,6 +539,7 @@
         
         // 变形相关状态
         isTransforming: false,
+        isExporting: false,
         selectedTransformations: ['语序变换', '同义词替换','选项扰动','上下文调整','情感立场转换','噪声注入'],
         transformationProgress: 0,
         transformingQuestionIndex: -1,
@@ -544,8 +560,10 @@
         // 筛选相关
         searchKeyword: '',
         filterType: '',
+        filterTransformationType: '',
         filterDomain: '',
         filterSource: '',
+        filterValidity: '',
       };
     },
     
@@ -593,6 +611,11 @@
           result = result.filter(q => q.type === this.filterType);
         }
         
+        // 按变形方式筛选
+        if (this.filterTransformationType) {
+          result = result.filter(q => q.transformationType === this.filterTransformationType);
+        }
+        
         // 按领域筛选
         if (this.filterDomain) {
           result = result.filter(q => q.domain === this.filterDomain);
@@ -603,9 +626,11 @@
           result = result.filter(q => q.source === this.filterSource);
         }
         
-        // 按变形方式筛选
-        if (this.filterMethod) {
-          result = result.filter(q => q.transformationType === this.filterMethod);
+        // 按有效性筛选
+        if (this.filterValidity === 'valid') {
+          result = result.filter(q => q.is_valid === true);
+        } else if (this.filterValidity === 'invalid') {
+          result = result.filter(q => q.is_valid === false);
         }
         
         return result;
@@ -636,6 +661,19 @@
         return Object.keys(sources).map(name => ({
           name,
           count: sources[name]
+        })).sort((a, b) => b.count - a.count);
+      },
+      
+      transformationTypeStats() {
+        const types = {};
+        this.transformedQuestions.forEach(q => {
+          const type = q.transformationType || '未知方式';
+          types[type] = (types[type] || 0) + 1;
+        });
+        
+        return Object.keys(types).map(name => ({
+          name,
+          count: types[name]
         })).sort((a, b) => b.count - a.count);
       },
     },
@@ -745,42 +783,33 @@
       
       async transformQuestions() {
         if (this.originalQuestions.length === 0) {
-          // 如果没有题目，提示用户先导入题目
           this.openImportDialog();
           return;
         }
         
         if (this.selectedTransformations.length === 0) {
-          // 如果没有选择变形方式，提示用户先选择变形方式
           this.$message.warning('请至少选择一种变形方式');
           return;
         }
         
-        // 开始变形
         this.isTransforming = true;
         this.transformationProgress = 0;
         this.transformedQuestions = [];
         
         try {
-          // 对每道题目，随机选择一种所选的变形方式
-          const questionGroups = {}; // 按变形方式分组的题目
+          // 准备需要处理的题目及方法
+          const batchQuestions = [];
           
-          // 初始化分组
-          for (const method of this.selectedTransformations) {
-            questionGroups[method] = [];
-          }
-          
-          // 为每道题随机分配变形方式
+          // 为每个题目选择一个随机变形方法
           for (let i = 0; i < this.originalQuestions.length; i++) {
-            this.transformingQuestionIndex = i;
             const question = this.originalQuestions[i];
             
             // 获取适合该题型的变形方式
             let availableMethods = [...this.selectedTransformations];
             
-            // 如果不是单选题，不能使用选项扰动
-            if (question.type !== 'single' && availableMethods.includes('选项扰动')) {
-              availableMethods = availableMethods.filter(method => method !== '选项扰动');
+            // 如果不是选择题，不能使用选项扰动
+            if (question.type !== 'single') {
+              availableMethods = availableMethods.filter(m => m !== '选项扰动');
             }
             
             // 如果没有适合的变形方式，跳过此题
@@ -788,180 +817,133 @@
             
             // 随机选择一种变形方式
             const randomMethod = availableMethods[Math.floor(Math.random() * availableMethods.length)];
-            this.currentTransformMethod = randomMethod;
             
-            // 将题目添加到对应的分组
-            questionGroups[randomMethod].push(question);
+            // 添加到处理队列
+            batchQuestions.push({
+              question,
+              method: randomMethod
+            });
           }
           
-          // 对每种变形方式分组进行批量处理
-          for (const method of this.selectedTransformations) {
-            const questionsToTransform = questionGroups[method];
+          // 设置进度总数
+          const totalQuestions = batchQuestions.length;
+          
+          // 每批大小
+          const batchSize = 5;
+          
+          // 将题目分成多个批次
+          const batches = [];
+          for (let i = 0; i < batchQuestions.length; i += batchSize) {
+            const batch = batchQuestions.slice(i, i + batchSize);
             
-            // 如果该方法没有适用的题目，跳过
-            if (questionsToTransform.length === 0) {
-              continue;
-            }
-            
-            this.currentTransformMethod = method;
-            
-            // 调用后端API进行变形
-            const response = await axios.post('http://localhost:5000/api/questions/transform', {
-              questions: questionsToTransform,
-              method: method,
-              evaluate_similarity: true,
-              similarity_threshold: 0.8
+            // 对每个批次计算主要使用的变形方法（选择出现次数最多的）
+            const methodCounts = {};
+            batch.forEach(item => {
+              methodCounts[item.method] = (methodCounts[item.method] || 0) + 1;
             });
             
-            // 打印响应数据，查看结构
-            console.log(`${method}变形响应:`, JSON.stringify(response.data));
-            
-            if (response.data.success) {
-              // 将变形后的题目添加到结果中
-              const transformedData = response.data.data || [];
-              
-              console.log(`${method}变形数据:`, transformedData);
-              
-              if (!transformedData || transformedData.length === 0) {
-                console.warn(`${method}变形返回空数据`);
-                continue;
+            // 找出主要方法
+            let mainMethod = batch[0].method;
+            let maxCount = 0;
+            Object.entries(methodCounts).forEach(([method, count]) => {
+              if (count > maxCount) {
+                maxCount = count;
+                mainMethod = method;
               }
+            });
+            
+            // 将批次添加到队列
+            batches.push({
+              questions: batch.map(item => item.question),
+              method: mainMethod,
+              methodMap: Object.fromEntries(batch.map(item => [item.question.id, item.method]))
+            });
+          }
+          
+          // 显示处理信息
+          if (batches.length > 0) {
+            this.transformingQuestionIndex = this.originalQuestions.indexOf(batches[0].questions[0]);
+            this.currentTransformMethod = batches[0].method;
+          }
+          
+          // 并行处理所有批次
+          let processedCount = 0;
+          const batchPromises = batches.map(async (batch) => {
+            try {
+              const response = await axios.post('http://localhost:5000/api/questions/transform', {
+                questions: batch.questions,
+                method: batch.method
+              });
               
-              // 记录所有变形后的题目ID，方便调试
-              console.log(`${method}变形题目IDs:`, transformedData.map(t => ({
-                id: t.id || 'unknown',
-                original_id: t.original_id || 'unknown',
-                similarity: t.similarity_score
-              })));
+              // 更新处理进度
+              processedCount += batch.questions.length;
+              this.transformationProgress = processedCount;
               
-              // 为每个变形后的题目添加原始题目和变形方式信息
-              for (const transformed of transformedData) {
-                try {
-                  // 确保transformed是对象
-                  if (!transformed || typeof transformed !== 'object') {
-                    console.warn('变形结果不是对象:', transformed);
-                    continue;
-                  }
-                  
-                  // 尝试找到对应的原题
-                  let originalQuestion = null;
-                  
-                  if (transformed.original_id) {
-                    // 如果有original_id，尝试通过ID匹配
-                    const originalId = String(transformed.original_id).replace('q', '');
-                    console.log('尝试匹配题目:', {
-                      original_id: transformed.original_id,
-                      formatted_id: originalId,
-                      matching_ids: this.originalQuestions.map(q => q.id)
-                    });
-                    originalQuestion = this.originalQuestions.find(q => q.id === `q${originalId}` || q.id === originalId);
-                    
-                    // 如果找不到，尝试直接使用数字ID
-                    if (!originalQuestion && !isNaN(Number(transformed.original_id))) {
-                      const numericId = Number(transformed.original_id);
-                      originalQuestion = this.originalQuestions.find(q => 
-                        q.id === numericId.toString() || 
-                        q.id === `q${numericId}`
-                      );
-                    }
-                  } else if (transformed.original) {
-                    // 如果已经包含original对象，直接使用
-                    originalQuestion = transformed.original;
-                  } else {
-                    // 尝试通过其他方式匹配（如答案或内容相似）
-                    const index = transformedData.indexOf(transformed);
-                    if (index < questionsToTransform.length) {
-                      originalQuestion = questionsToTransform[index];
-                    }
-                  }
-                  
-                  if (originalQuestion) {
-                    // 确保transformed包含所有必要字段
-                    const processedTransformed = {
-                      ...transformed,
-                      id: transformed.id || `${originalQuestion.id}_transformed`,
-                      type: transformed.type || originalQuestion.type,
-                      prompt: transformed.prompt || transformed.content || transformed.question || originalQuestion.prompt,
-                      options: transformed.options || originalQuestion.options,
-                      answer: transformed.answer || originalQuestion.answer,
-                      original: originalQuestion,
-                      transformationType: method,
-                      similarity_score: parseFloat(transformed.similarity_score || 0.8)
-                    };
-                    
-                    // 严格使用后端返回的is_valid字段，不在前端重新计算
-                    if (transformed.is_valid !== undefined) {
-                      // 确保boolean类型
-                      processedTransformed.is_valid = transformed.is_valid === true || transformed.is_valid === 'true';
-                    } else {
-                      // 如果后端没有返回is_valid字段，按相似度>0.8判断
-                      processedTransformed.is_valid = processedTransformed.similarity_score >= 0.8;
-                    }
-                    
-                    console.log('成功匹配并处理题目:', {
-                      id: processedTransformed.id,
-                      original_id: transformed.original_id,
-                      is_valid: processedTransformed.is_valid,
-                      similarity: processedTransformed.similarity_score
-                    });
-                    
-                    // 添加到结果数组
-                    this.transformedQuestions.push(processedTransformed);
-                  } else {
-                    console.warn('找不到对应的原始题目，尝试使用位置索引匹配:', transformed);
-                    // 如果ID匹配失败，尝试使用位置索引匹配
-                    const index = transformedData.indexOf(transformed);
-                    if (index < questionsToTransform.length) {
-                      const backupOriginal = questionsToTransform[index];
-                      console.log('使用位置索引匹配找到原题:', backupOriginal.id);
+              if (response.data.success) {
+                const transformedData = response.data.data || [];
+                const processedTransformedQuestions = [];
+                
+                if (transformedData && transformedData.length > 0) {
+                  for (const transformed of transformedData) {
+                    if (transformed && typeof transformed === 'object') {
+                      // 找到对应的原始题目
+                      const originalId = transformed.original_id;
+                      const originalQuestion = this.originalQuestions.find(q => q.id === originalId) || 
+                                              batch.questions.find(q => q.id === originalId);
+                      
+                      if (!originalQuestion) continue;
+                      
+                      // 使用原来为此题选择的变形方法
+                      const transformMethod = batch.methodMap[originalId] || batch.method;
                       
                       // 创建处理后的转换题目
                       const processedTransformed = {
                         ...transformed,
-                        id: transformed.id || `${backupOriginal.id}_transformed`,
-                        type: transformed.type || backupOriginal.type,
-                        prompt: transformed.prompt || transformed.content || transformed.question || backupOriginal.prompt,
-                        options: transformed.options || backupOriginal.options,
-                        answer: transformed.answer || backupOriginal.answer,
-                        original: backupOriginal,
-                        transformationType: method,
-                        similarity_score: parseFloat(transformed.similarity_score || 0.8),
-                        is_valid: transformed.is_valid === true || transformed.is_valid === 'true' || 
-                                 (transformed.similarity_score ? parseFloat(transformed.similarity_score) >= 0.8 : true)
+                        id: transformed.id || `${originalQuestion.id}_transformed`,
+                        type: transformed.type || originalQuestion.type,
+                        prompt: transformed.prompt || transformed.content || transformed.question || originalQuestion.prompt,
+                        options: transformed.options || originalQuestion.options,
+                        answer: transformed.answer || originalQuestion.answer,
+                        original: originalQuestion,
+                        transformationType: transformMethod,
+                        similarity_score: parseFloat(transformed.similarity_score || 0.8)
                       };
                       
+                      // 严格使用后端返回的is_valid字段，不在前端重新计算
+                      if (transformed.is_valid !== undefined) {
+                        processedTransformed.is_valid = transformed.is_valid === true || transformed.is_valid === 'true';
+                      } else {
+                        processedTransformed.is_valid = processedTransformed.similarity_score >= 0.8;
+                      }
+                      
                       // 添加到结果数组
-                      this.transformedQuestions.push(processedTransformed);
-                    } else {
-                      console.error('无法匹配题目，跳过此题:', transformed);
+                      processedTransformedQuestions.push(processedTransformed);
                     }
                   }
-                } catch (err) {
-                  console.error('处理变形题目时出错:', err, transformed);
                 }
+                
+                return processedTransformedQuestions;
+              } else {
+                console.error(`批量变形失败: ${response.data.message}`);
+                return [];
               }
-              
-              // 更新进度
-              this.transformationProgress += questionsToTransform.length;
-            } else {
-              this.$message.error(`${method}变形失败: ${response.data.message}`);
+            } catch (error) {
+              console.error('处理批次时出错:', error);
+              return [];
             }
-          }
+          });
+          
+          // 等待所有批次处理完成
+          const results = await Promise.all(batchPromises);
+          
+          // 合并结果
+          this.transformedQuestions = results.flat();
           
           // 变形完成后，显示结果
           if (this.transformedQuestions.length === 0) {
             this.$message.warning('没有成功变形的题目');
           } else {
-            // 计算有效题目数量
             const validCount = this.transformedQuestions.filter(q => q.is_valid === true).length;
-            console.log(`变形总结: 总题数=${this.transformedQuestions.length}, 有效题数=${validCount}`);
-            console.log('所有变形题目有效性:', this.transformedQuestions.map(q => ({
-              id: q.id,
-              similarity: q.similarity_score,
-              is_valid: q.is_valid
-            })));
-            
-            // 计算有效率
             const validityRatio = validCount / this.transformedQuestions.length;
             this.$message.success(`成功变形${this.transformedQuestions.length}道题目，有效题数${validCount}，有效率${(validityRatio * 100).toFixed(1)}%`);
             
@@ -972,7 +954,6 @@
           console.error('变形题目失败:', error);
           let errorMessage = '变形题目失败';
           
-          // 尝试提取详细错误信息
           if (error.response && error.response.data) {
             errorMessage += `：${error.response.data.message || JSON.stringify(error.response.data)}`;
           } else if (error.message) {
@@ -1012,7 +993,7 @@
       
       getTypeName(type) {
         const typeMap = {
-          'single': '单选题',
+          'single': '选择题',
           'judge': '判断题',
           'essay': '简答题'
         };
@@ -1049,7 +1030,7 @@
       
       // 导出功能
       async exportQuestions(format) {
-        this.isTransforming = true;
+        this.isExporting = true;
         try {
           // 获取原始题目
           const originalQuestions = this.originalQuestions || [];
@@ -1104,7 +1085,7 @@
           console.error(`导出${format.toUpperCase()}失败:`, error);
           this.$message.error(`导出${format.toUpperCase()}失败: ${error.message || '请重试'}`);
         } finally {
-          this.isTransforming = false;
+          this.isExporting = false;
         }
       },
       exportToJson() {
@@ -1119,7 +1100,7 @@
   
 <style lang="scss" scoped>
 .question-expansion-container {
-  padding-top: 40px;
+  padding: 10px;
 }
 
 .mb-15 {
@@ -1327,6 +1308,26 @@
 
 .questions-list {
   margin-bottom: 16px;
+}
+
+.invalid-transformation {
+  background-color: rgba(245, 34, 45, 0.1);
+  border: 2px solid rgba(245, 34, 45, 0.3);
+  border-radius: 8px;
+  position: relative;
+}
+
+.invalid-transformation::before {
+  content: "变形无效";
+  position: absolute;
+  top: -12px;
+  right: 10px;
+  background-color: #f5222d;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
 }
 
 .question-panel {

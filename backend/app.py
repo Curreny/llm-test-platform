@@ -4,11 +4,17 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_cors import CORS
 import logging
 from io import BytesIO
+import json
+import time
 
 # 导入题库管理模块
 from question_generate import QuestionGenerateManager, ExportManager
 # 导入题目扩展模块
 from question_expansion import transform_question_bank, export_expanded_question_bank
+# 导入审核模块
+from question_audit import SUPPORTED_MODELS, batch_process_questions
+# 导入报告生成模块
+from report_generator import ReportGenerator
 
 # 配置日志
 logging.basicConfig(level=logging.DEBUG)
@@ -20,6 +26,122 @@ CORS(app)
 
 # 全局变量保存变形题库
 transformed_question_bank = []
+
+# 启动时间戳，用于前端检测后端是否重启
+STARTUP_TIMESTAMP = str(int(time.time()))
+
+# 审核模块 API 路由
+@app.route('/api/audit/test-models', methods=['POST'])
+def test_models():
+    """测试模型响应"""
+    try:
+        data = request.json
+        questions = data.get('questions', [])
+        models = data.get('models', [])
+        audit_mode = data.get('auditMode', 'rule-based')
+        
+        logger.info(f"接收到测试请求: 题目数量={len(questions)}, 模型={models}, 审核模式={audit_mode}")
+        
+        if not questions:
+            return jsonify({
+                "success": False,
+                "message": "没有提供题目数据"
+            }), 400
+        
+        if not models:
+            return jsonify({
+                "success": False,
+                "message": "没有选择测试模型"
+            }), 400
+        
+        # 验证模型是否支持
+        unsupported_models = [model for model in models if model not in SUPPORTED_MODELS]
+        if unsupported_models:
+            return jsonify({
+                "success": False,
+                "message": f"以下模型不受支持: {', '.join(unsupported_models)}",
+                "supportedModels": SUPPORTED_MODELS
+            }), 400
+        
+        # 确保每个问题都有必要的字段
+        for i, question in enumerate(questions):
+            # 确保有问题内容
+            if not question.get('问题'):
+                logger.warning(f"问题 {i+1} 缺少内容字段")
+                question['问题'] = f"测试问题 {i+1}"
+            
+            # 确保有类型
+            if not question.get('题型'):
+                logger.warning(f"问题 {i+1} 缺少类型字段，默认为essay")
+                question['题型'] = '简答题'
+                
+            # 确保有ID
+            if not question.get('ID'):
+                question['ID'] = f"q{i+1}"
+        
+        # 处理问题
+        logger.info(f"开始处理题目...")
+        results, summary = batch_process_questions(questions, models, audit_mode)
+        logger.info(f"处理完成: 总数={summary['totalCount']}, 通过率={summary['passRate']}%")
+        
+        return jsonify({
+            "success": True,
+            "results": results,
+            "summary": summary
+        })
+    
+    except Exception as e:
+        logger.error(f"测试模型时出错: {str(e)}", exc_info=True)
+        return jsonify({
+            "success": False,
+            "message": f"测试模型时出错: {str(e)}"
+        }), 500
+
+@app.route('/api/audit/list-models', methods=['GET'])
+def list_models():
+    """获取支持的模型列表"""
+    try:
+        models = [{"name": model, "available": True} for model in SUPPORTED_MODELS]
+        
+        return jsonify({
+            "success": True,
+            "models": models
+        })
+    
+    except Exception as e:
+        logger.error(f"获取模型列表时出错: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": f"获取模型列表时出错: {str(e)}"
+        }), 500
+
+@app.route('/api/audit/save-review', methods=['POST'])
+def save_review():
+    """保存人工审核结果"""
+    try:
+        data = request.json
+        review_item = data.get('reviewItem', {})
+        
+        if not review_item or not review_item.get('id'):
+            return jsonify({
+                "success": False,
+                "message": "未提供有效的审核项目"
+            }), 400
+        
+        # 实际项目中，这里会保存到数据库
+        # 这里简单返回成功
+        return jsonify({
+            "success": True,
+            "message": "审核结果已保存",
+            "data": review_item
+        })
+    
+    except Exception as e:
+        logger.error(f"保存审核结果时出错: {str(e)}")
+        return jsonify({
+            "success": False,
+            "message": f"保存审核结果时出错: {str(e)}"
+        }), 500
 
 @app.route('/api/questions/generate', methods=['POST'])
 def generate_questions():
@@ -152,8 +274,6 @@ def transform_questions():
         data = request.get_json()
         questions = data.get('questions', [])
         method = data.get('method', '语序变换')
-        evaluate_similarity = data.get('evaluate_similarity', True)
-        similarity_threshold = data.get('similarity_threshold', 0.8)
         
         if not questions:
             return jsonify({
@@ -168,9 +288,7 @@ def transform_questions():
         # 使用题目扩展模块变形题目
         result = transform_question_bank(
             questions, 
-            method=method, 
-            evaluate_similarity=evaluate_similarity,
-            similarity_threshold=similarity_threshold
+            method=method
         )
         
         # 增强变形结果，确保包含ID信息
@@ -202,14 +320,36 @@ def get_transformed_questions():
     """获取已保存的变形题库"""
     global transformed_question_bank
     try:
+        # 提供已保存的变形题库
         return jsonify({
             'success': True,
-            'message': f'获取到{len(transformed_question_bank)}道变形题目',
             'data': transformed_question_bank
         })
-    
     except Exception as e:
         logger.error(f"获取变形题库时出错: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': str(e)
+        }), 500
+
+@app.route('/api/questions/transformed-bank', methods=['GET'])
+def get_transformed_bank():
+    """获取拓展题库（原始题目和变形题目）"""
+    global transformed_question_bank
+    try:
+        # 获取当前题库
+        original_questions = QuestionGenerateManager.get_current_question_bank()
+        
+        # 提供整个拓展题库，包括原始题目和变形题目
+        return jsonify({
+            'success': True,
+            'data': {
+                'originalQuestions': original_questions,
+                'transformedQuestions': transformed_question_bank
+            }
+        })
+    except Exception as e:
+        logger.error(f"获取拓展题库时出错: {str(e)}")
         return jsonify({
             'success': False,
             'message': str(e)
@@ -332,6 +472,106 @@ def export_transformed_excel():
             'success': False,
             'message': str(e)
         }), 500
+
+# 报告生成API路由
+@app.route('/api/audit/generate-report', methods=['POST'])
+def generate_report():
+    """生成审计报告"""
+    try:
+        data = request.json
+        results = data.get('results', [])
+        summary = data.get('summary', {})
+        report_format = data.get('format', 'pdf')  # 默认PDF格式
+        sections = data.get('sections', ['summary', 'performance', 'charts', 'recommendations'])
+        
+        logger.info(f"接收到报告生成请求: 格式={report_format}, 部分={sections}, 结果数量={len(results)}")
+        
+        if not results:
+            return jsonify({
+                'success': False,
+                'message': '没有审计结果，无法生成报告'
+            }), 400
+        
+        # 检查格式
+        if report_format not in ['pdf', 'html']:
+            return jsonify({
+                'success': False,
+                'message': f'不支持的报告格式: {report_format}'
+            }), 400
+        
+        # 生成报告
+        output, filename = ReportGenerator.generate_report(
+            results, 
+            summary, 
+            report_format, 
+            sections
+        )
+        
+        # 从内存直接发送文件
+        mimetype = {
+            'pdf': 'application/pdf',
+            'html': 'text/html'
+        }.get(report_format, 'application/octet-stream')
+        
+        return send_file(
+            output,
+            as_attachment=True,
+            download_name=filename,
+            mimetype=mimetype
+        )
+    
+    except Exception as e:
+        logger.error(f"生成报告时出错: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'message': f'生成报告时出错: {str(e)}'
+        }), 500
+
+@app.route('/api/audit/preview-report', methods=['POST'])
+def preview_report():
+    """预览报告API"""
+    try:
+        data = request.json
+        
+        if not data or 'results' not in data:
+            return jsonify({
+                'success': False,
+                'message': '缺少必要的结果数据'
+            }), 400
+        
+        results = data.get('results', [])
+        summary = data.get('summary', {})
+        sections = data.get('sections', ['summary', 'performance', 'charts', 'recommendations'])
+        
+        if not results:
+            return jsonify({
+                'success': False,
+                'message': '审计结果为空，无法生成报告'
+            }), 400
+            
+        # 使用ReportGenerator生成预览HTML
+        preview_data = ReportGenerator.generate_preview(results, summary, sections)
+        
+        return jsonify({
+            'success': True,
+            'preview': preview_data['html'],
+            'data': preview_data['data']
+        })
+        
+    except Exception as e:
+        print(f"生成报告预览时出错: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': f'生成预览失败: {str(e)}'
+        }), 500
+
+@app.route('/api/heartbeat', methods=['GET'])
+def heartbeat():
+    """心跳检测接口，返回后端启动时间戳"""
+    return jsonify({
+        'status': 'ok',
+        'timestamp': STARTUP_TIMESTAMP
+    })
 
 # 前端路由
 @app.route('/', defaults={'path': ''})

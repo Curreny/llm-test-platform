@@ -19,9 +19,9 @@
 // 全屏hero区域样式
 .hero-fullscreen {
     position: relative;
-    height: 60vh;
+    height: 100vh;
     width: 100%;
-    background: linear-gradient(135deg, rgba(69, 39, 160, 0.8), rgba(33, 150, 243, 0.8)), url('/images/bg-profile.jpg') no-repeat center center;
+    background: linear-gradient(135deg, rgba(69, 39, 160, 0.8), rgba(33, 150, 243, 0.8)), url('/images/home-bg.jpg') no-repeat center center;
     background-size: cover;
     display: flex;
     flex-direction: column;
@@ -45,7 +45,8 @@
 .content-section {
     position: relative;
     background-color: #f5f5f5;
-    z-index: 1;
+    background-size: cover;
+    z-index: 0;
     padding: 4rem 0 0 0;
 
     .cover-content {
@@ -261,9 +262,9 @@
 }
 
 .hero-btn {
-    height: 50px;
+    height: 60px;
     padding: 0 2rem;
-    font-size: 1.1rem;
+    font-size: 2.1rem;
     background: white;
     color: #2196f3;
     border: none;

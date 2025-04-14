@@ -22,9 +22,15 @@ import SimpleLayout from './layouts/SimpleLayout.vue'
 import router from './router'
 // import './plugins/click-away'
 
+// 引入ECharts
+import * as echarts from 'echarts'
+
 import './scss/app.scss';
 
 Vue.use(Antd);
+
+// 将ECharts挂载到Vue原型上，方便组件内使用
+Vue.prototype.$echarts = echarts
 
 Vue.config.productionTip = false
 

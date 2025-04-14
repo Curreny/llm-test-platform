@@ -782,7 +782,7 @@ export default {
 
 <style scoped>
 .question-generate-container {
-  padding-top: 40px;
+  padding: 10px;
 }
 
 /* 控制面板样式 */

@@ -48,7 +48,7 @@ class QuestionGenerateManager:
             processed = {
                 'id': question.get('id', ''),
                 'type': question.get('type', 'essay'),  # 默认为问答题
-                'domain': question.get('domain', 'Other domain'),
+                'domain': question.get('domain'),
                 'source': source,
                 'prompt': question.get('prompt', ''),
                 'answer': question.get('answer', '')

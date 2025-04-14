@@ -25,7 +25,6 @@
 					</div>
 				
 					<div class="nav-divider"></div>
-
 					<router-link to="/question-generate" class="side-nav-item">
 						<div class="side-nav-icon icon-primary">
 							<svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -46,8 +45,7 @@
 						</div>
 						<span>观测题库拓展</span>
 					</router-link>
-					
-					<router-link to="/data-audit" class="side-nav-item">
+					<router-link to="/data-audit#header-data-audit" class="side-nav-item">
 						<div class="side-nav-icon icon-success">
 							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -56,7 +54,7 @@
 						<span>数据审核模块</span>
 					</router-link>
 					
-					<router-link to="/results" class="side-nav-item">
+					<router-link to="/data-audit#results-preview" class="side-nav-item">
 						<div class="side-nav-icon icon-warning">
 							<svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="nav-svg">
 								<path d="M21 21H4C3.44772 21 3 20.5523 3 20V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -64,10 +62,10 @@
 								<path d="M21 8V14H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 							</svg>
 						</div>
-						<span>结果生成模块</span>
+						<span>审核结果预览</span>
 					</router-link>
 					
-					<router-link to="/reports" class="side-nav-item">
+					<router-link to="/data-audit#report-generation" class="side-nav-item">
 						<div class="side-nav-icon icon-info">
 							<svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="nav-svg">
 								<path d="M19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -76,10 +74,11 @@
 								<path d="M7 17H13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 							</svg>
 						</div>
-						<span>自动化报告生成</span>
+						<span>报告生成与预览</span>
 					</router-link>
+				
 					
-					<router-link to="/api" class="side-nav-item">
+					<router-link to="/api-integration" class="side-nav-item">
 						<div class="side-nav-icon icon-danger">
 							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 								<path d="M10 20L14 4M18 8L22 12L18 16M6 16L2 12L6 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

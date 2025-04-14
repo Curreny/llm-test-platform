@@ -33,6 +33,18 @@ let routes = [
 		component: () => import('../views/QuestionExpansion.vue'),
 	},
 	{
+		path: '/data-audit',
+		name: 'DataAudit',
+		layout: "simple",
+		component: () => import('../views/DataAudit.vue'),
+	},
+	{
+		path: '/api-integration',
+		name: 'ApiIntegration',
+		layout: "simple",
+		component: () => import('../views/ApiIntegration.vue'),
+	},
+	{
 		path: '/dashboard',
 		name: 'Dashboard',
 		layout: "dashboard",

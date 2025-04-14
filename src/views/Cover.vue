@@ -1,18 +1,20 @@
 <template>
   <div class="cover-container">
     <!-- 全屏Hero区域，包含导航栏和标题介绍 -->
-    <div class="hero-fullscreen">
+    <div class="hero-fullscreen" id="home">
       <!-- 导航栏部分 -->
       <div class="hero-navbar">
         <div class="navbar-brand">
-          <h3>飞舞不会coding</h3>
+          <h3><img src="/images/logo-ct-white.png" style="width: 35px; height: 35px;">飞舞不会coding</h3>
         </div>
         <div class="navbar-links">
-          <a href="#" class="nav-link active">主页</a>
-          <a href="#" class="nav-link">成果</a>
-          <a href="#" class="nav-link">关于</a>
-          <a href="#" class="nav-link">博客</a>
-          <a href="#" class="nav-link">联系</a>
+          <a href="#home" class="nav-link active">主页</a>
+          <a href="/question-generate" class="nav-link">观测题库生成</a>
+          <a href="/question-expansion" class="nav-link">观测题库拓展</a>
+          <a href="/data-audit" class="nav-link">模型响应检测</a>
+          <a @click="navigateTo('/data-audit#results-preview')" class="nav-link">结果生成</a>
+          <a @click="navigateTo('/data-audit#report-generation')" class="nav-link">报告生成</a>
+          <a @click="navigateTo('/api-integration')" class="nav-link">观测调用</a>
         </div>
         <div class="navbar-actions">
           <a href="#" class="nav-icon">
@@ -25,7 +27,7 @@
               <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15M17 10L12 15M12 15L7 10M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </a>
-          <a-button type="primary" shape="round" class="signup-btn">登录/注册</a-button>
+          <a-button href="/Sign-In" type="primary" shape="round" class="signup-btn">登录/注册</a-button>
         </div>
       </div>
       
@@ -34,20 +36,17 @@
         <div class="hero-left">
           <div class="platform-icon mb-10">
           </div>
+          <h1 class="hero-title">智能监测 · 守护未来</h1>
           <h1 class="hero-title">大模型综合观测展示平台</h1>
 
-          <p class="hero-description">多维度、全流程的安全性和能力观测方法</p>
           <div class="hero-actions">
-            <a-button type="primary" size="large" shape="round" class="hero-btn" @click="navigateToDashboard">
-              <span>立即开始</span>
-              <svg class="ml-5" width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M7.29289 14.7071C6.90237 14.3166 6.90237 13.6834 7.29289 13.2929L10.5858 10L7.29289 6.70711C6.90237 6.31658 6.90237 5.68342 7.29289 5.29289C7.68342 4.90237 8.31658 4.90237 8.70711 5.29289L12.7071 9.29289C13.0976 9.68342 13.0976 10.3166 12.7071 10.7071L8.70711 14.7071C8.31658 15.0976 7.68342 15.0976 7.29289 14.7071Z" fill="#ffffff"/>
-              </svg>
+            <a-button @click="scrollToElement('#product')" type="primary" size="large" shape="round" class="hero-btn">
+              <span>立即开始&nbsp;🚀&nbsp;🚀</span>
             </a-button>
           </div>
         </div>
         <div class="hero-right">
-          <img src="/images/info-card-1.jpg" alt="大模型综合观测展示平台" class="hero-image">
+          <img src="/images/bg.png" alt="大模型综合观测展示平台" class="hero-image">
         </div>
       </div>
     </div>
@@ -60,11 +59,11 @@
           <a-col :span="24">
             <a-card :bordered="false" class="problem-card gradient-bg">
               <div class="card-header mb-15">
-                <h2 class="font-bold">问题说明</h2>
+                <h2 class="font-bold">平台介绍</h2>
                 <div class="header-line"></div>
               </div>
               <p class="problem-text">
-                随着大模型技术的发展，性能漂移、数据泄露、结果不可控、数据偏见、AI幻觉等问题日益凸显，引发了全球范围内对AI安全的关注。为了应对这些挑战，国内外政策、法规迎来了新的探索与实践，安全行业也在积极探讨如何确保大模型性能与合规性。大模型能力与安全观测需要多维度、全流程的安全性和能力观测方法。
+                随着大模型技术的快速发展，性能漂移、数据泄露、安全合规等问题日益凸显，成为AI产业健康发展的关键挑战。本平台提供了全面的大模型能力与安全观测解决方案，通过题库生成、自动化测试、模型响应检测和报告生成等功能，帮助您全方位评估大模型的性能、安全性与合规性。使用我们的平台，您可以轻松发现模型潜在风险，获取专业评估报告，确保AI应用安全可控、合规可信。立即开始，提升您的大模型质量与安全水平！
               </p>
             </a-card>
           </a-col>
@@ -76,7 +75,7 @@
             <a-card :bordered="false" class="widget-1 widget-1-blue">
               <a-statistic
                 title="安全观测能力"
-                :value="100"
+                :value="93"
                 suffix="%"
                 :precision="1"
                 class="text-success"
@@ -96,7 +95,7 @@
             <a-card :bordered="false" class="widget-1 widget-1-purple">
               <a-statistic
                 title="题库容量"
-                :value="500"
+                :value="150000"
                 suffix="+"
                 :precision="0"
                 class="text-primary"
@@ -113,7 +112,7 @@
             <a-card :bordered="false" class="widget-1 widget-1-green">
               <a-statistic
                 title="审核成功率"
-                :value="90"
+                :value="95"
                 suffix="%"
                 :precision="0"
                 class="text-success"
@@ -129,8 +128,8 @@
         </a-row>
 
         <!-- 用户期望部分 - 六个卡片 -->
-        <div class="card-header mb-15">
-          <h2 class="font-bold">用户期望</h2>
+        <div class="card-header mb-15" id="product">
+          <h2 class="font-bold">我们的产品实现</h2>
           <div class="header-line"></div>
         </div>
         <a-row :gutter="24" type="flex" align="stretch">
@@ -145,11 +144,11 @@
                     <path d="M9 16H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </div>
-                <h3 class="font-bold mb-2">观测题库生成模块</h3>
-                <p>能够根据用户输入，自动化生成大模型性能观测题库，题目形式不限于选择、简答与判断等，题目内容来源不限于爬虫、模型生成等，观测题库生成形式不限，测试题库不低于500题。</p>
+                <h3 class="font-bold mb-2">观测题库生成</h3>
+                <p>能够根据用户输入，自动化生成大模型性能观测题库，题目形式不限于选择、简答与判断等，题目内容来源丰富，测试题库单次可生成3000题。</p>
                 <div class="card-footer">
                   <a-tag color="blue">自动生成</a-tag>
-                  <a-tag color="cyan">500+题目</a-tag>
+                  <a-tag color="cyan">3000+题目</a-tag>
                 </div>
               </a-card>
             </router-link>
@@ -165,27 +164,27 @@
                     <path d="M8 9H16M8 13H14M8 17H12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </div>
-                <h3 class="font-bold mb-2">观测题库拓展模块</h3>
-                <p>能够自动化拓展测试题库，根据生成的测试题库，能够对测试题库进行"变形"，变形方式不低于5种，需展示变形过程，展现形式不限，变形后的题目有效性不低于90%。</p>
+                <h3 class="font-bold mb-2">观测题库拓展</h3>
+                <p>能够自动化拓展测试题库，根据生成的测试题库，能够对测试题库进行"变形"，变形方式可任选6种，变形后的题目有效性达95%。</p>
                 <div class="card-footer">
-                  <a-tag color="purple">5+变形方式</a-tag>
-                  <a-tag color="magenta">90%有效性</a-tag>
+                  <a-tag color="purple">6种变形方式</a-tag>
+                  <a-tag color="magenta">95%有效性</a-tag>
                 </div>
               </a-card>
             </router-link>
           </a-col>
 
-          <!-- 数据审核模块 -->
+          <!-- 模型响应检测模块 -->
           <a-col :span="24" :md="12" :xl="8" class="mb-24">
-            <router-link to="/" class="card-link">
+            <router-link to="/data-audit#header-data-audit" class="card-link">
               <a-card :bordered="false" class="feature-card feature-success">
                 <div class="feature-icon mb-4 icon-success">
                   <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </div>
-                <h3 class="font-bold mb-2">数据审核模块</h3>
-                <p>针对大模型测试结果，平台能够自动审核测试结果，并将大模型输入、输出与判定结果进行页面展示，需支持多种审核模式，且自动化判定审核成功率大于90%。</p>
+                <h3 class="font-bold mb-2">模型响应检测</h3>
+                <p>针对大模型测试结果，平台能够自动审核测试结果，并将大模型输入、输出与判定结果进行页面展示，支持规则匹配和模型辅助2种审核模式，且自动化判定审核成功率大于90%。</p>
                 <div class="card-footer">
                   <a-tag color="green">多审核模式</a-tag>
                   <a-tag color="lime">实时判定</a-tag>
@@ -196,7 +195,7 @@
 
           <!-- 结果生成模块 -->
           <a-col :span="24" :md="12" :xl="8" class="mb-24">
-            <router-link to="/" class="card-link">
+            <router-link to="/data-audit#results-preview" class="card-link">
               <a-card :bordered="false" class="feature-card feature-warning">
                 <div class="feature-icon mb-4 icon-warning">
                   <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="nav-svg">
@@ -205,8 +204,8 @@
                     <path d="M21 8V14H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </div>
-                <h3 class="font-bold mb-2">结果生成模块</h3>
-                <p>平台根据数据审核能力，自动化生成测试总体结果，结果包括模型的性能、安全性、推理速度、精度、内存和计算资源的消耗情况等，结果展现形式不唯一，多样化的呈现方式。</p>
+                <h3 class="font-bold mb-2">结果生成</h3>
+                <p>平台根据模型响应检测能力，自动化生成测试总体结果，结果包括模型的性能、安全性、推理速度、精度、内存和计算资源的消耗情况等。</p>
                 <div class="card-footer">
                   <a-tag color="orange">多维度分析</a-tag>
                   <a-tag color="gold">精确统计</a-tag>
@@ -217,7 +216,7 @@
 
           <!-- 自动化报告生成 -->
           <a-col :span="24" :md="12" :xl="8" class="mb-24">
-            <router-link to="/" class="card-link">
+            <router-link to="/data-audit#report-generation" class="card-link">
               <a-card :bordered="false" class="feature-card feature-info">
                 <div class="feature-icon mb-4 icon-info">
                   <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="nav-svg">
@@ -227,8 +226,8 @@
                     <path d="M7 17H13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </div>
-                <h3 class="font-bold mb-2">自动化报告生成</h3>
-                <p>支持自动生成性能与安全性观测报告，供用户下载和审阅。</p>
+                <h3 class="font-bold mb-2">报告生成</h3>
+                <p>平台支持自动生成性能与安全性观测报告，包括HTML、PDF格式，供用户下载和审阅。</p>
                 <div class="card-footer">
                   <a-tag color="#13C2C2">PDF报告</a-tag>
                   <a-tag color="#08979C">可视化图表</a-tag>
@@ -239,14 +238,14 @@
 
           <!-- 观测调用形式 -->
           <a-col :span="24" :md="12" :xl="8" class="mb-24">
-            <router-link to="/" class="card-link">
+            <router-link to="/api-integration" class="card-link">
               <a-card :bordered="false" class="feature-card feature-danger">
                 <div class="feature-icon mb-4 icon-danger">
                   <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M10 20L14 4M18 8L22 12L18 16M6 16L2 12L6 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </div>
-                <h3 class="font-bold mb-2">观测调用形式</h3>
+                <h3 class="font-bold mb-2">观测调用</h3>
                 <p>支持多样化平台调用形式，包括但不限于SDK、Saas等。</p>
                 <div class="card-footer">
                   <a-tag color="red">API接口</a-tag>
@@ -258,31 +257,68 @@
           </a-col>
         
           <a-col :span="24" class="mb-50">
-            <a-card :bordered="false" class="card-info">
-              <a-row type="flex">
-                <a-col class="col-content" :span="24" :xl="14">
-                  <div class="card-content">
-                    <h6>立即开始</h6>
-                    <h5>体验飞舞不会coding团队平台</h5>
-                    <p>我们的平台提供了完整的团队协作解决方案，支持多维度、全流程的项目管理与开发。</p>
-                  </div>
-                  <div class="card-footer">
-                    <a-button type="primary" size="large" shape="round" @click="navigateToDashboard">
-                      <span>开始体验</span>
-                      <svg class="ml-5" width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M7.29289 14.7071C6.90237 14.3166 6.90237 13.6834 7.29289 13.2929L10.5858 10L7.29289 6.70711C6.90237 6.31658 6.90237 5.68342 7.29289 5.29289C7.68342 4.90237 8.31658 4.90237 8.70711 5.29289L12.7071 9.29289C13.0976 9.68342 13.0976 10.3166 12.7071 10.7071L8.70711 14.7071C8.31658 15.0976 7.68342 15.0976 7.29289 14.7071Z" fill="#ffffff"/>
-                      </svg>
-                    </a-button>
-                  </div>
-                </a-col>
-                <a-col class="col-img" :span="24" :xl="10">
-                  <div class="card-img-bg">
-                    <img src="images/info-card-2.jpg" alt="">
-                  </div>
-                </a-col>
-              </a-row>
+            <a-card :bordered="false" class="team-card">
+              <div class="card-header mb-15">
+                <h2 class="font-bold">我们的团队</h2>
+                <div class="header-line"></div>
+              </div>
+              <div class="team-members">
+                <a-row :gutter="[48, 48]" type="flex" justify="center">
+                  <a-col :span="24" :sm="12" :md="8" :lg="4" class="text-center">
+                    <div class="team-member">
+                      <div class="member-avatar" style="background-color: #1890ff">
+                        <span class="avatar-text">张</span>
+                      </div>
+                      <h3 class="member-name">张三</h3>
+                      <p class="member-role">项目负责人</p>
+                      <p class="member-desc">负责项目整体规划与架构设计</p>
+                    </div>
+                  </a-col>
+                  <a-col :span="24" :sm="12" :md="8" :lg="4" class="text-center">
+                    <div class="team-member">
+                      <div class="member-avatar" style="background-color: #52c41a">
+                        <span class="avatar-text">李</span>
+                      </div>
+                      <h3 class="member-name">李四</h3>
+                      <p class="member-role">前端开发</p>
+                      <p class="member-desc">负责用户界面与交互体验设计</p>
+                    </div>
+                  </a-col>
+                  <a-col :span="24" :sm="12" :md="8" :lg="4" class="text-center">
+                    <div class="team-member">
+                      <div class="member-avatar" style="background-color: #722ed1">
+                        <span class="avatar-text">王</span>
+                      </div>
+                      <h3 class="member-name">王五</h3>
+                      <p class="member-role">后端开发</p>
+                      <p class="member-desc">负责服务器端逻辑与接口开发</p>
+                    </div>
+                  </a-col>
+                  <a-col :span="24" :sm="12" :md="8" :lg="4" class="text-center">
+                    <div class="team-member">
+                      <div class="member-avatar" style="background-color: #fa8c16">
+                        <span class="avatar-text">赵</span>
+                      </div>
+                      <h3 class="member-name">赵六</h3>
+                      <p class="member-role">算法工程师</p>
+                      <p class="member-desc">负责模型评估与算法优化</p>
+                    </div>
+                  </a-col>
+                  <a-col :span="24" :sm="12" :md="8" :lg="4" class="text-center">
+                    <div class="team-member">
+                      <div class="member-avatar" style="background-color: #eb2f96">
+                        <span class="avatar-text">钱</span>
+                      </div>
+                      <h3 class="member-name">钱七</h3>
+                      <p class="member-role">测试工程师</p>
+                      <p class="member-desc">负责质量保障与系统测试</p>
+                    </div>
+                  </a-col>
+                </a-row>
+              </div>
             </a-card>
           </a-col>
+          
         </a-row>
       </div>
     </div>
@@ -318,7 +354,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <p class="copyright">版权所有 © 2024 飞舞不会coding</p>
+        <p class="copyright">版权所有 © 2025 飞舞不会coding</p>
         <div class="contact">
           <span>全天候服务热线: 400-800-8888</span>
           <span class="contact-icon">
@@ -355,8 +391,28 @@ export default {
     };
   },
   methods: {
-    navigateToDashboard() {
-      this.$router.push('/dashboard');
+    scrollToElement(selector) {
+      const element = document.querySelector(selector);
+      if (element) {
+        window.scrollTo({
+          top: element.offsetTop + 1000,
+          behavior: 'smooth'
+        });
+      }
+    },
+    navigateTo(path) {
+      if (path.includes('#')) {
+        const parts = path.split('#');
+        if (parts[0] === '' || parts[0] === '/') {
+          // 如果是当前页面内的锚点
+          this.scrollToElement('#' + parts[1]);
+        } else {
+          // 如果是其他页面的锚点
+          this.$router.push(path);
+        }
+      } else {
+        this.$rouer.push(path);
+      }
     },
     handleScroll() {
       const navbar = document.querySelector('.hero-navbar');
@@ -395,7 +451,6 @@ export default {
 
 <style lang="scss" scoped>
 
-
 .card-link {
   display: block;
   text-decoration: none;
@@ -410,11 +465,105 @@ export default {
   }
 }
 
+.navbar-links a {
+  cursor: pointer;
+}
+
 .feature-card {
   height: 100%;
   transition: all 0.3s ease;
-  
-  // ... existing feature-card styles if any ...
+}
+
+.team-card {
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  background-color: #fff;
+  margin-top: 20px;
+}
+
+.team-members {
+  margin-top: 32px;
+}
+
+.team-member {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+}
+
+.team-member:hover {
+  transform: translateY(-5px);
+}
+
+.member-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.team-member:hover .member-avatar {
+  transform: scale(1.05);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+}
+
+.avatar-text {
+  font-size: 40px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.member-name {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.member-role {
+  font-size: 16px;
+  color: #1890ff;
+  margin-bottom: 10px;
+  font-weight: 500;
+  background-color: rgba(24, 144, 255, 0.1);
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+.member-desc {
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+  max-width: 180px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.card-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.card-header h2 {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.header-line {
+  height: 3px;
+  width: 60px;
+  background: linear-gradient(90deg, #1890ff, #722ed1);
+  margin: 0 auto;
+  border-radius: 3px;
 }
 
 // ... rest of existing code ...
