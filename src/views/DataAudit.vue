@@ -200,7 +200,7 @@
       <!-- 下侧主区域 -->
       <a-col :span="24" :lg="24">
     <!-- 空状态 -->
-        <a-card v-if="auditResults.length === 0 && !isAuditing" :bordered="false" class="empty-state-card">
+        <a-card v-if="auditResults.length === 0 && !isAuditing" :bordered="false" class="empty-state-card" id="results-preview">
           <div class="card-header mb-15">
             <h3 class="font-bold" style="font-size: 28px;">检测结果预览</h3>
           </div>
@@ -539,7 +539,7 @@
             
             
             <!-- 当前为统计图表 -->
-            <a-col :span="24" class="mb-24" id="results-preview">
+            <a-col :span="24" class="mb-24">
               <a-card :bordered="false" class="chart-panel">
                 <div class="card-header mb-15">
                   <h2 class="font-bold"style="font-size: 28px;">测试总体结果预览</h2>

@@ -36,7 +36,7 @@
         <div class="hero-left">
           <div class="platform-icon mb-10">
           </div>
-          <h1 class="hero-title">智能监测 · 守护未来</h1>
+          <h1 class="hero-title">天枢智评&nbsp;—</h1>
           <h1 class="hero-title">大模型综合观测展示平台</h1>
 
           <div class="hero-actions">
@@ -62,7 +62,7 @@
                 <h2 class="font-bold">📢平台介绍</h2>
               </div>
               <p class="problem-text">
-                随着大模型技术的快速发展，性能漂移、数据泄露、安全合规等问题日益凸显，成为AI产业健康发展的关键挑战。本平台提供了全面的大模型能力与安全观测解决方案，通过题库生成、自动化测试、模型响应检测和报告生成等功能，帮助您全方位评估大模型的性能、安全性与合规性。使用我们的平台，您可以轻松发现模型潜在风险，获取专业评估报告，确保AI应用安全可控、合规可信。立即开始，提升您的大模型质量与安全水平！
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;随着大模型技术的快速发展，性能漂移、数据泄露、安全合规等问题日益凸显，成为AI产业健康发展的关键挑战。本平台提供了全面的大模型能力与安全观测解决方案，通过题库生成、自动化测试、模型响应检测和报告生成等功能，帮助您全方位评估大模型的性能、安全性与合规性。使用我们的平台，您可以轻松发现模型潜在风险，获取专业评估报告，确保AI应用安全可控、合规可信。立即开始，提升您的大模型质量与安全水平！
               </p>
             </a-card>
           </a-col>
@@ -111,9 +111,9 @@
             <a-card :bordered="false" class="widget-1 widget-1-green">
               <a-statistic
                 title="审核成功率"
-                :value="95"
+                :value="98.34"
                 suffix="%"
-                :precision="0"
+                :precision="2"
                 class="text-success"
               >
               </a-statistic>
@@ -135,7 +135,7 @@
           <a-col :span="24" :md="12" :xl="8" class="mb-24">
             <router-link to="/question-generate" class="card-link">
               <a-card :bordered="false" class="feature-card feature-primary">
-                <h4 class="font-bold mb-2">📚&nbsp;观测题库生成</h4>
+                <h4 class="font-bold mb-2 ">📚&nbsp;观测题库生成</h4>
                 <p>能够根据用户输入，自动化生成大模型性能观测题库，题目形式不限于选择、简答与判断等，题目内容来源丰富，测试题库单次可生成3000题。</p>
                 <div class="card-footer">
                   <a-tag color="blue">自动生成</a-tag>
@@ -540,6 +540,50 @@ export default {
   border-radius: 3px;
 }
 
-// ... rest of existing code ...
+// 平台介绍卡片美化样式
+.problem-card.gradient-bg {
+  position: relative;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  border: none !important;
+  background: linear-gradient(135deg, #f5f7fa, #ebf0f6);
+  
+  .card-header {
+    z-index: 1;
+    margin-bottom: 20px;
+    text-align: center;
+    
+    h2 {
+      font-size: 28px;
+      font-weight: 600;
+      color: #222;
+      margin-bottom: 5px;
+      
+    }
+  }
+  
+  .problem-text {
+    position: relative;
+    z-index: 1;
+    font-size: 16px;
+    line-height: 1.8;
+    color: rgba(0, 0, 0, 0.75);
+    margin-bottom: 0;
+    text-align: justify;
+    padding: 5px 0;
+    
+  }
+  
+  
+  // 添加悬停效果
+  &:hover {
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+    transform: translateY(-3px);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+}
+
 </style>
 
