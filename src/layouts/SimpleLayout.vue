@@ -51,7 +51,7 @@
 								<path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 							</svg>
 						</div>
-						<span>数据审核模块</span>
+						<span>模型响应检测</span>
 					</router-link>
 					
 					<router-link to="/data-audit#results-preview" class="side-nav-item">
@@ -62,7 +62,7 @@
 								<path d="M21 8V14H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 							</svg>
 						</div>
-						<span>审核结果预览</span>
+						<span>检测结果预览</span>
 					</router-link>
 					
 					<router-link to="/data-audit#report-generation" class="side-nav-item">

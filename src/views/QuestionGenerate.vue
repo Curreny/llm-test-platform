@@ -528,22 +528,21 @@ export default {
     }
   },
   created() {
-    // 组件创建时，获取当前题库
-    this.fetchCurrentQuestionBank();
+    // 组件创建时，从会话存储中加载题库
+    this.loadSessionData();
   },
   methods: {
-    // 获取当前题库
-    async fetchCurrentQuestionBank() {
+    // 从会话存储中加载数据
+    loadSessionData() {
       try {
-        const response = await axios.get('http://localhost:5000/api/questions/current-bank');
-        
-        if (response.data.success && response.data.data.length > 0) {
-          this.questions = response.data.data;
+        const sessionData = sessionStorage.getItem('questionBank');
+        if (sessionData) {
+          this.questions = JSON.parse(sessionData);
           this.originalQuestions = [...this.questions];
-          console.log(`已加载${this.questions.length}道题目`);
-        }
+          console.log(`已从会话中恢复${this.questions.length}道题目`);
+        } 
       } catch (error) {
-        console.error('获取当前题库失败:', error);
+        console.error('从会话加载数据失败:', error);
       }
     },
     
@@ -582,7 +581,7 @@ export default {
           });
         }
         
-        const response = await fetch('http://localhost:5000/api/questions/generate', {
+        const response = await fetch('http://starvii.tpddns.cn:9004/api/questions/generate', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -598,6 +597,10 @@ export default {
         if (result.success) {
           this.questions = result.data;
           this.originalQuestions = [...this.questions];
+          
+          // 将新生成的题目保存到会话存储
+          sessionStorage.setItem('questionBank', JSON.stringify(this.questions));
+          
           this.$message.success(`成功生成${this.questions.length}道题目`);
         } else {
           throw new Error(result.message);
@@ -681,7 +684,7 @@ export default {
     async exportQuestions(format) {
       this.isGenerating = true;
       try {
-        const response = await fetch(`http://localhost:5000/api/questions/export-${format}`, {
+        const response = await fetch(`http://starvii.tpddns.cn:9004/api/questions/export-${format}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -736,7 +739,7 @@ export default {
         onOk: async () => {
           try {
             // 调用API清空题库
-            const response = await axios.post('http://localhost:5000/api/questions/clear-bank');
+            const response = await axios.post('http://starvii.tpddns.cn:9004/api/questions/clear-bank');
             
             if (response.data.success) {
               // 重置所有相关状态
@@ -759,6 +762,10 @@ export default {
               this.filterType = '';
               this.filterDomain = '';
               this.filterSource = '';
+              
+              // 从会话存储中清除题库数据
+              sessionStorage.removeItem('questionBank');
+              
               this.$message.success('题库已清空');
             } else {
               this.$message.error(response.data.message || '清空题库失败');

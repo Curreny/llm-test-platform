@@ -5,7 +5,7 @@
         <a-col :span="24">
           <a-card :bordered="false" class="header-card">
             <div class="card-header mb-15">
-              <h2 class="font-bold">观测题库扩展模块</h2>
+              <h2 class="font-bold">观测题库拓展</h2>
             </div>
             <p class="problem-text">
               自动化拓展测试题库，支持多种变形方式，有效性不低于90%。
@@ -678,60 +678,37 @@
       },
     },
     
-    mounted() {
-      // 页面加载时尝试获取已生成的题库
-      this.checkExistingQuestions();
-      
-      // 获取已保存的变形题目
-      this.fetchTransformedQuestions();
+    created() {
+      // 从会话存储中加载题库数据
+      this.loadSessionData();
     },
 
     methods: {
+      // 从会话存储中加载数据
+      loadSessionData() {
+        // 加载原始题库
+        try {
+          const sessionData = sessionStorage.getItem('questionBank');
+          if (sessionData) {
+            this.originalQuestions = JSON.parse(sessionData);
+            console.log(`已从会话中恢复${this.originalQuestions.length}道原始题目`);
+          } 
+          
+          // 加载变形题库
+          const transformedData = sessionStorage.getItem('transformedQuestionBank');
+          if (transformedData) {
+            this.transformedQuestions = JSON.parse(transformedData);
+            console.log(`已从会话中恢复${this.transformedQuestions.length}道变形题目`);
+          } 
+        } catch (error) {
+          console.error('从会话加载数据失败:', error);
+        }
+      },
+      
       openImportDialog() {
         this.importDialogVisible = true;
       },
       
-      async checkExistingQuestions() {
-        try {
-          const response = await axios.get('http://localhost:5000/api/questions/current-bank');
-          if (response.data.success && response.data.data.length > 0) {
-            this.originalQuestions = response.data.data;
-            this.$message.info(`发现${this.originalQuestions.length}道已生成的题目`);
-          }
-        } catch (error) {
-          console.error('检查已存在题目失败:', error);
-        }
-      },
-      
-      // 获取已保存的变形题目
-      async fetchTransformedQuestions() {
-        try {
-          const response = await axios.get('http://localhost:5000/api/questions/get-transformed');
-          if (response.data.success && response.data.data.length > 0) {
-            this.transformedQuestions = response.data.data;
-            console.log(`成功加载${this.transformedQuestions.length}道已保存的变形题目`);
-          }
-        } catch (error) {
-          console.error('获取已保存变形题目失败:', error);
-        }
-      },
-      
-      // 保存变形题目到后端
-      async saveTransformedQuestions() {
-        if (this.transformedQuestions.length === 0) return;
-        
-        try {
-          const response = await axios.post('http://localhost:5000/api/questions/save-transformed', {
-            questions: this.transformedQuestions
-          });
-          
-          if (response.data.success) {
-            console.log(`成功保存${this.transformedQuestions.length}道变形题目`);
-          }
-        } catch (error) {
-          console.error('保存变形题目失败:', error);
-        }
-      },
       
       // 清空变形题库
       async clearTransformedQuestions() {
@@ -743,10 +720,14 @@
           cancelText: '取消',
           onOk: async () => {
             try {
-              const response = await axios.post('http://localhost:5000/api/questions/clear-transformed');
+              const response = await axios.post('/api/questions/clear-transformed');
               if (response.data.success) {
                 this.transformedQuestions = [];
                 this.currentPage = 1;
+                
+                // 清空会话存储
+                sessionStorage.removeItem('transformedQuestionBank');
+                
                 this.$message.success('已清空变形题库');
               }
             } catch (error) {
@@ -761,17 +742,32 @@
       async importQuestionsFromGenerate() {
         this.isImporting = true;
         try {
-          // 通过API直接从后端获取已生成的题库
-          const response = await axios.get('http://localhost:5000/api/questions/current-bank');
-          
-          if (response.data.success && response.data.data.length > 0) {
-            this.originalQuestions = response.data.data;
+          // 首先从会话存储中获取题库
+          const sessionData = sessionStorage.getItem('questionBank');
+          if (sessionData) {
+            this.originalQuestions = JSON.parse(sessionData);
             this.transformedQuestions = [];
             this.currentPage = 1;
             this.$message.success(`成功导入${this.originalQuestions.length}道题目`);
             this.importDialogVisible = false;
           } else {
-            this.$message.warning('题库为空，请先在"题库生成"页面生成题目');
+            // 如果会话存储中没有，则从后端获取
+            const response = await axios.get('/api/questions/current-bank');
+            
+            if (response.data.success && response.data.data.length > 0) {
+              this.originalQuestions = response.data.data;
+              this.transformedQuestions = [];
+              this.currentPage = 1;
+              
+              // 保存到会话存储
+              sessionStorage.setItem('questionBank', JSON.stringify(this.originalQuestions));
+              sessionStorage.removeItem('transformedQuestionBank');
+              
+              this.$message.success(`成功导入${this.originalQuestions.length}道题目`);
+              this.importDialogVisible = false;
+            } else {
+              this.$message.warning('题库为空，请先在"题库生成"页面生成题目');
+            }
           }
         } catch (error) {
           console.error('导入题目失败:', error);
@@ -781,6 +777,7 @@
         }
       },
       
+      // 执行题目变形
       async transformQuestions() {
         if (this.originalQuestions.length === 0) {
           this.openImportDialog();
@@ -870,7 +867,7 @@
           let processedCount = 0;
           const batchPromises = batches.map(async (batch) => {
             try {
-              const response = await axios.post('http://localhost:5000/api/questions/transform', {
+              const response = await axios.post('/api/questions/transform', {
                 questions: batch.questions,
                 method: batch.method
               });
@@ -936,37 +933,27 @@
           // 等待所有批次处理完成
           const results = await Promise.all(batchPromises);
           
-          // 合并结果
-          this.transformedQuestions = results.flat();
+          // 合并所有批次的结果
+          let allTransformedQuestions = [];
+          results.forEach(result => {
+            allTransformedQuestions = allTransformedQuestions.concat(result);
+          });
           
-          // 变形完成后，显示结果
-          if (this.transformedQuestions.length === 0) {
-            this.$message.warning('没有成功变形的题目');
-          } else {
-            const validCount = this.transformedQuestions.filter(q => q.is_valid === true).length;
-            const validityRatio = validCount / this.transformedQuestions.length;
-            this.$message.success(`成功变形${this.transformedQuestions.length}道题目，有效题数${validCount}，有效率${(validityRatio * 100).toFixed(1)}%`);
-            
-            // 保存变形题目到后端
-            this.saveTransformedQuestions();
-          }
+          // 添加到变形题目列表
+          this.transformedQuestions = this.transformedQuestions.concat(allTransformedQuestions);
+          
+          // 更新分页
+          this.currentPage = 1;
+          
+          // 保存到会话存储
+          sessionStorage.setItem('transformedQuestionBank', JSON.stringify(this.transformedQuestions));
+          
+          this.$message.success(`成功变形生成${allTransformedQuestions.length}道题目`);
         } catch (error) {
-          console.error('变形题目失败:', error);
-          let errorMessage = '变形题目失败';
-          
-          if (error.response && error.response.data) {
-            errorMessage += `：${error.response.data.message || JSON.stringify(error.response.data)}`;
-          } else if (error.message) {
-            errorMessage += `：${error.message}`;
-          } else {
-            errorMessage += '，请检查网络连接或服务器状态';
-          }
-          
-          this.$message.error(errorMessage);
+          console.error('变形处理出错:', error);
+          this.$message.error('变形处理出错: ' + error.message);
         } finally {
           this.isTransforming = false;
-          this.transformingQuestionIndex = -1;
-          this.currentTransformMethod = '';
         }
       },
       
@@ -1045,7 +1032,7 @@
           
           console.log(`准备导出拓展题库为${format}格式（原始题目: ${originalQuestions.length}, 变形题目: ${transformedQuestions.length}）`);
           
-          const response = await fetch(`http://localhost:5000/api/questions/export-transformed-${format}`, {
+          const response = await fetch(`/api/questions/export-transformed-${format}`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'

@@ -59,8 +59,7 @@
           <a-col :span="24">
             <a-card :bordered="false" class="problem-card gradient-bg">
               <div class="card-header mb-15">
-                <h2 class="font-bold">平台介绍</h2>
-                <div class="header-line"></div>
+                <h2 class="font-bold">📢平台介绍</h2>
               </div>
               <p class="problem-text">
                 随着大模型技术的快速发展，性能漂移、数据泄露、安全合规等问题日益凸显，成为AI产业健康发展的关键挑战。本平台提供了全面的大模型能力与安全观测解决方案，通过题库生成、自动化测试、模型响应检测和报告生成等功能，帮助您全方位评估大模型的性能、安全性与合规性。使用我们的平台，您可以轻松发现模型潜在风险，获取专业评估报告，确保AI应用安全可控、合规可信。立即开始，提升您的大模型质量与安全水平！
@@ -129,22 +128,14 @@
 
         <!-- 用户期望部分 - 六个卡片 -->
         <div class="card-header mb-15" id="product">
-          <h2 class="font-bold">我们的产品实现</h2>
-          <div class="header-line"></div>
+          <h2 class="font-bold">📊平台总览</h2>
         </div>
         <a-row :gutter="24" type="flex" align="stretch">
           <!-- 观测题库生成模块 -->
           <a-col :span="24" :md="12" :xl="8" class="mb-24">
             <router-link to="/question-generate" class="card-link">
               <a-card :bordered="false" class="feature-card feature-primary">
-                <div class="feature-icon mb-4 icon-primary">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V7C19 5.89543 18.1046 5 17 5H15M9 5C9 6.10457 9.89543 7 11 7H13C14.1046 7 15 6.10457 15 5M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M9 12H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M9 16H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </div>
-                <h3 class="font-bold mb-2">观测题库生成</h3>
+                <h4 class="font-bold mb-2">📚&nbsp;观测题库生成</h4>
                 <p>能够根据用户输入，自动化生成大模型性能观测题库，题目形式不限于选择、简答与判断等，题目内容来源丰富，测试题库单次可生成3000题。</p>
                 <div class="card-footer">
                   <a-tag color="blue">自动生成</a-tag>
@@ -158,13 +149,7 @@
           <a-col :span="24" :md="12" :xl="8" class="mb-24">
             <router-link to="/question-expansion" class="card-link">
               <a-card :bordered="false" class="feature-card feature-purple">
-                <div class="feature-icon mb-4 icon-purple">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M8 3V5M16 3V5M7 21H17C19.2091 21 21 19.2091 21 17V9C21 6.79086 19.2091 5 17 5H7C4.79086 5 3 6.79086 3 9V17C3 19.2091 4.79086 21 7 21Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M8 9H16M8 13H14M8 17H12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </div>
-                <h3 class="font-bold mb-2">观测题库拓展</h3>
+                <h4 class="font-bold mb-2">🛠️&nbsp;观测题库拓展</h4>
                 <p>能够自动化拓展测试题库，根据生成的测试题库，能够对测试题库进行"变形"，变形方式可任选6种，变形后的题目有效性达95%。</p>
                 <div class="card-footer">
                   <a-tag color="purple">6种变形方式</a-tag>
@@ -178,12 +163,8 @@
           <a-col :span="24" :md="12" :xl="8" class="mb-24">
             <router-link to="/data-audit#header-data-audit" class="card-link">
               <a-card :bordered="false" class="feature-card feature-success">
-                <div class="feature-icon mb-4 icon-success">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </div>
-                <h3 class="font-bold mb-2">模型响应检测</h3>
+
+                <h4 class="font-bold mb-2">📶&nbsp;模型响应检测</h4>
                 <p>针对大模型测试结果，平台能够自动审核测试结果，并将大模型输入、输出与判定结果进行页面展示，支持规则匹配和模型辅助2种审核模式，且自动化判定审核成功率大于90%。</p>
                 <div class="card-footer">
                   <a-tag color="green">多审核模式</a-tag>
@@ -197,14 +178,8 @@
           <a-col :span="24" :md="12" :xl="8" class="mb-24">
             <router-link to="/data-audit#results-preview" class="card-link">
               <a-card :bordered="false" class="feature-card feature-warning">
-                <div class="feature-icon mb-4 icon-warning">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="nav-svg">
-                    <path d="M21 21H4C3.44772 21 3 20.5523 3 20V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M7 14L11 10L15 14L21 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M21 8V14H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </div>
-                <h3 class="font-bold mb-2">结果生成</h3>
+
+                <h4 class="font-bold mb-2">📊&nbsp;检测结果预览</h4>
                 <p>平台根据模型响应检测能力，自动化生成测试总体结果，结果包括模型的性能、安全性、推理速度、精度、内存和计算资源的消耗情况等。</p>
                 <div class="card-footer">
                   <a-tag color="orange">多维度分析</a-tag>
@@ -218,15 +193,8 @@
           <a-col :span="24" :md="12" :xl="8" class="mb-24">
             <router-link to="/data-audit#report-generation" class="card-link">
               <a-card :bordered="false" class="feature-card feature-info">
-                <div class="feature-icon mb-4 icon-info">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="nav-svg">
-                    <path d="M19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M7 7H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M7 12H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M7 17H13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </div>
-                <h3 class="font-bold mb-2">报告生成</h3>
+
+                <h4 class="font-bold mb-2">📝&nbsp;报告生成与预览</h4>
                 <p>平台支持自动生成性能与安全性观测报告，包括HTML、PDF格式，供用户下载和审阅。</p>
                 <div class="card-footer">
                   <a-tag color="#13C2C2">PDF报告</a-tag>
@@ -240,12 +208,7 @@
           <a-col :span="24" :md="12" :xl="8" class="mb-24">
             <router-link to="/api-integration" class="card-link">
               <a-card :bordered="false" class="feature-card feature-danger">
-                <div class="feature-icon mb-4 icon-danger">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M10 20L14 4M18 8L22 12L18 16M6 16L2 12L6 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </div>
-                <h3 class="font-bold mb-2">观测调用</h3>
+                <h4 class="font-bold mb-2">🧩&nbsp;观测调用</h4>
                 <p>支持多样化平台调用形式，包括但不限于SDK、Saas等。</p>
                 <div class="card-footer">
                   <a-tag color="red">API接口</a-tag>
@@ -259,59 +222,63 @@
           <a-col :span="24" class="mb-50">
             <a-card :bordered="false" class="team-card">
               <div class="card-header mb-15">
-                <h2 class="font-bold">我们的团队</h2>
-                <div class="header-line"></div>
+                <h2 class="font-bold">🤝我们的团队</h2>
               </div>
               <div class="team-members">
                 <a-row :gutter="[48, 48]" type="flex" justify="center">
                   <a-col :span="24" :sm="12" :md="8" :lg="4" class="text-center">
                     <div class="team-member">
-                      <div class="member-avatar" style="background-color: #1890ff">
-                        <span class="avatar-text">张</span>
+                      <div class="member-avatar">
+                        <img src="/images/avatar-1.png">
                       </div>
-                      <h3 class="member-name">张三</h3>
+                      <h3 class="member-name">小沈</h3>
                       <p class="member-role">项目负责人</p>
-                      <p class="member-desc">负责项目整体规划与架构设计</p>
+                      <p class="member-desc">项目整体规划</p>
+                      <p class="member-desc">项目架构设计</p>
                     </div>
                   </a-col>
                   <a-col :span="24" :sm="12" :md="8" :lg="4" class="text-center">
                     <div class="team-member">
-                      <div class="member-avatar" style="background-color: #52c41a">
-                        <span class="avatar-text">李</span>
+                      <div class="member-avatar">
+                        <img src="/images/avatar-2.png">
                       </div>
-                      <h3 class="member-name">李四</h3>
-                      <p class="member-role">前端开发</p>
-                      <p class="member-desc">负责用户界面与交互体验设计</p>
+                      <h3 class="member-name">小孙</h3>
+                      <p class="member-role">前后端开发</p>
+                      <p class="member-desc">用户界面与交互设计</p>
+                      <p class="member-desc">后端代码性能调试</p>
                     </div>
                   </a-col>
                   <a-col :span="24" :sm="12" :md="8" :lg="4" class="text-center">
                     <div class="team-member">
-                      <div class="member-avatar" style="background-color: #722ed1">
-                        <span class="avatar-text">王</span>
+                      <div class="member-avatar">
+                        <img src="/images/avatar-3.png">
                       </div>
-                      <h3 class="member-name">王五</h3>
-                      <p class="member-role">后端开发</p>
-                      <p class="member-desc">负责服务器端逻辑与接口开发</p>
+                      <h3 class="member-name">小邱</h3>
+                      <p class="member-role">技术总监</p>
+                      <p class="member-desc">策划方案制定</p>
+                      <p class="member-desc">架构设计</p>
                     </div>
                   </a-col>
                   <a-col :span="24" :sm="12" :md="8" :lg="4" class="text-center">
                     <div class="team-member">
-                      <div class="member-avatar" style="background-color: #fa8c16">
-                        <span class="avatar-text">赵</span>
+                      <div class="member-avatar">
+                        <img src="/images/avatar-4.png">
                       </div>
-                      <h3 class="member-name">赵六</h3>
-                      <p class="member-role">算法工程师</p>
-                      <p class="member-desc">负责模型评估与算法优化</p>
+                      <h3 class="member-name">小平</h3>
+                      <p class="member-role">系统开发</p>
+                      <p class="member-desc">数据逻辑存储</p>
+                      <p class="member-desc">界面设计</p>
                     </div>
                   </a-col>
                   <a-col :span="24" :sm="12" :md="8" :lg="4" class="text-center">
                     <div class="team-member">
-                      <div class="member-avatar" style="background-color: #eb2f96">
-                        <span class="avatar-text">钱</span>
+                      <div class="member-avatar">
+                        <img src="/images/avatar-5.png">
                       </div>
-                      <h3 class="member-name">钱七</h3>
-                      <p class="member-role">测试工程师</p>
-                      <p class="member-desc">负责质量保障与系统测试</p>
+                      <h3 class="member-name">小陈</h3>
+                      <p class="member-role">数据分析师</p>
+                      <p class="member-desc">观测数据集收集</p>
+                      <p class="member-desc">观测数据集清洗整理</p>
                     </div>
                   </a-col>
                 </a-row>
@@ -472,47 +439,54 @@ export default {
 .feature-card {
   height: 100%;
   transition: all 0.3s ease;
+  border-radius: 10px;
 }
 
 .team-card {
-  padding: 32px;
+  padding: 0px;
   border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
   background-color: #fff;
   margin-top: 20px;
 }
 
 .team-members {
   margin-top: 32px;
+  margin-bottom: 30px;
 }
 
 .team-member {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 24px;
   transition: all 0.3s ease;
 }
 
 .team-member:hover {
   transform: translateY(-5px);
+  cursor: pointer;
 }
 
 .member-avatar {
-  width: 100px;
-  height: 100px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 20px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  margin: 0 auto 24px;
+  overflow: hidden;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
 
-.team-member:hover .member-avatar {
+.member-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.member-avatar:hover {
   transform: scale(1.05);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
 .avatar-text {

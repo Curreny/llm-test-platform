@@ -46,9 +46,9 @@
             <div class="aaa">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="section-icon">
                 <path d="M12 6.25278V19.2528M12 6.25278C10.8321 5.47686 9.24649 5 7.5 5C5.75351 5 4.16789 5.47686 3 6.25278V19.2528C4.16789 18.4769 5.75351 18 7.5 18C9.24649 18 10.8321 18.4769 12 19.2528M12 6.25278C13.1679 5.47686 14.7535 5 16.5 5C18.2465 5 19.8321 5.47686 21 6.25278V19.2528C19.8321 18.4769 18.2465 18 16.5 18C14.7535 18 13.1679 18.4769 12 19.2528" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+                    </svg>
               选择测试模型
-            </div>
+                </div>
             <a-select
               v-model="selectedModels"
               placeholder="请选择要测试的模型"
@@ -75,7 +75,7 @@
               >
                 <div class="mode-icon" :class="`mode-${mode.value}`">
                   <div v-html="mode.icon"></div>
-                </div>
+            </div>
                 <div class="mode-content">
                   <div class="mode-title">{{ mode.label }}</div>
                   <div class="mode-desc">{{ mode.description }}</div>
@@ -990,11 +990,28 @@ export default {
   },
   
   created() {
-    // 页面加载时，尝试从localStorage恢复数据
-    this.loadSavedResults();
+    // 页面加载时尝试获取数据，模仿QuestionExpansion.vue的实现
+    this.checkExistingQuestions();
+    
+    // 获取已保存的审计结果
+    this.fetchAuditResults();
     
     // 添加窗口大小变化监听，实现图表自适应
     window.addEventListener('resize', this.handleResize);
+  },
+  
+  mounted() {
+    // 页面挂载后初始化所有图表
+    if (this.auditResults.length > 0) {
+      this.initializeAllCharts();
+    }
+  },
+  
+  updated() {
+    // 组件更新后重新调整图表大小
+    this.$nextTick(() => {
+      this.handleResize();
+    });
   },
   
   beforeDestroy() {
@@ -1003,6 +1020,99 @@ export default {
   },
   
   methods: {
+    // 检查是否有已存在的题目
+    async checkExistingQuestions() {
+      try {
+        // 从会话存储中获取题库
+        const sessionData = sessionStorage.getItem('questionBank');
+        if (sessionData) {
+          const parsedQuestions = JSON.parse(sessionData);
+          // 更新题库选择列表
+          this.availableQuestions = parsedQuestions.map(q => ({
+            id: q.id,
+            prompt: q.prompt,
+            type: q.type,
+            selected: true
+          }));
+          
+          // 按题型分组
+          this.updateQuestionGroups(this.availableQuestions);
+          console.log(`已从会话中恢复${this.availableQuestions.length}道题目`);
+        } 
+      } catch (error) {
+        console.error('检查已存在题目失败:', error);
+      }
+    },
+    
+    // 获取已保存的审计结果
+    async fetchAuditResults() {
+      try {
+        // 从会话存储中获取审计结果
+        const auditData = sessionStorage.getItem('auditResults');
+        if (auditData) {
+          this.auditResults = JSON.parse(auditData);
+          console.log(`已从会话中恢复${this.auditResults.length}条审计结果`);
+          
+          // 如果有审计结果，也获取统计摘要
+          const summaryData = sessionStorage.getItem('auditSummary');
+          if (summaryData) {
+            this.statsSummary = JSON.parse(summaryData);
+          } else if (this.auditResults.length > 0) {
+            // 如果没有保存的摘要但有结果，则重新计算
+            this.statsSummary = this.calculateStatisticsFromResults(this.auditResults);
+          }
+        }
+      } catch (error) {
+        console.error('获取已保存审计结果失败:', error);
+      }
+    },
+    
+    // 保存审计结果到后端和会话存储
+    async saveAuditResults() {
+      if (this.auditResults.length === 0) return;
+      
+      try {
+        // 保存到会话存储
+        sessionStorage.setItem('auditResults', JSON.stringify(this.auditResults));
+        
+        // 如果有统计摘要，也保存它
+        if (this.statsSummary) {
+          sessionStorage.setItem('auditSummary', JSON.stringify(this.statsSummary));
+        }
+        
+        console.log(`成功保存${this.auditResults.length}条审计结果`);
+      } catch (error) {
+        console.error('保存审计结果失败:', error);
+      }
+    },
+    
+    // 清空审计结果
+    async clearAuditResults() {
+      this.$confirm({
+        title: '确认清空所有结果',
+        content: '此操作将删除所有测试结果，无法恢复。确定要继续吗？',
+        okText: '确定',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk: () => {
+          this.auditResults = [];
+          this.statsSummary = null;
+          
+          // 清除会话存储中的审计数据
+          sessionStorage.removeItem('auditResults');
+          sessionStorage.removeItem('auditSummary');
+          
+          // 保留题库数据，只清除结果
+          this.updateQuestionSelection();
+          
+          // 清空图表
+          this.destroyCharts();
+          
+          this.$message.success('已清空所有测试结果');
+        },
+      });
+    },
+    
     // 添加切换检测模式的方法
     toggleAuditMode(mode) {
       const index = this.selectedAuditModes.indexOf(mode);
@@ -1212,8 +1322,8 @@ export default {
         });
       }
       
-      // 保存数据到localStorage
-      this.saveResults();
+      // 保存数据到会话存储
+      this.saveAuditResults();
     },
     
     // 标准化答案格式，便于比较（保留此方法，因为可能会在其他地方使用）
@@ -1225,30 +1335,14 @@ export default {
     
     // 清除所有测试结果
     clearResults() {
-      // 清空结果数据
-      this.auditResults = [];
-      this.statsSummary = {
-        totalCount: 0,
-        avgResponseTime: 0,
-        choiceCount: 0,
-        choiceCorrectCount: 0,
-        choiceCorrectRate: 0,
-        essayCount: 0,
-        essayAvgScore: 0
-      };
-      
-      // 清除localStorage中保存的数据
-      localStorage.removeItem('auditResults');
-      localStorage.removeItem('auditSummary');
-      
-      // 保留题库数据，只清除结果
-      this.$message.success('已成功清除所有测试结果');
+      this.clearAllResults();
     },
     
     showImportDialog() {
       this.importDialogVisible = true;
       this.fileInfo = null;
     },
+    
     
     async handleImportConfirm() {
       if (this.questions.length > 0) {
@@ -1422,7 +1516,7 @@ export default {
     
     async importFromGenerateModule() {
       try {
-        const response = await axios.get('http://localhost:5000/api/questions/current-bank');
+        const response = await axios.get('/api/questions/current-bank');
         
         if (response.data.success && response.data.data) {
           this.questions = response.data.data;
@@ -1437,7 +1531,7 @@ export default {
     
     async importFromExpansionModule() {
       try {
-        const response = await axios.get('http://localhost:5000/api/questions/transformed-bank');
+        const response = await axios.get('/api/questions/transformed-bank');
         
         if (response.data.success && response.data.data) {
           const { originalQuestions = [], transformedQuestions = [] } = response.data.data;
@@ -1656,32 +1750,24 @@ export default {
         responseType: 'blob', // 重要，表示期望收到二进制数据
       })
       .then(response => {
-        // 创建一个blob链接并下载
-        const blob = new Blob([response.data], { 
-          type: response.headers['content-type'] 
+        // 创建Blob
+        const blob = new Blob([response.data], {
+          type: 'application/' + (this.reportFormat === 'pdf' ? 'pdf' : 'html')
         });
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
         
-        // 从Content-Disposition头获取文件名，如果有的话
-        const contentDisposition = response.headers['content-disposition'];
-        let filename = `${this.currentModel || '大模型'}_性能评估报告`;
-        
-        if (contentDisposition) {
-          const filenameMatch = contentDisposition.match(/filename="(.+)"/);
-          if (filenameMatch && filenameMatch.length === 2)
-            filename = filenameMatch[1];
+        // 根据报告格式决定操作
+        if (this.reportFormat === 'html') {
+          // HTML格式时，显示预览
+          this.showReportPreview(blob);
+        } else {
+          // PDF格式时，直接下载
+          this.downloadReport(blob);
         }
         
-        // 添加扩展名
-        if (!filename.includes('.')) {
-          filename += `.${this.reportFormat}`;
-        }
+        // 确保保存最新的审计结果
+        this.saveAuditResults();
         
-        link.download = filename;
-        link.click();
-        window.URL.revokeObjectURL(link.href);
-        this.$message.success(`报告已成功导出为${this.getFormatName(this.reportFormat)}格式`);
+        this.$message.success(`报告生成成功`);
       })
       .catch(error => {
         console.error('生成报告失败:', error);
@@ -2682,22 +2768,6 @@ export default {
       }
     },
     
-    // 保存数据到localStorage
-    saveResults() {
-      try {
-        // 保存检测结果
-        localStorage.setItem('auditResults', JSON.stringify(this.auditResults));
-        // 保存统计摘要
-        localStorage.setItem('auditSummary', JSON.stringify(this.statsSummary));
-        // 保存题库
-        localStorage.setItem('auditQuestions', JSON.stringify(this.questions));
-        
-        console.log('成功保存检测数据:', this.auditResults.length);
-      } catch (error) {
-        console.error('保存数据失败:', error);
-      }
-    },
-    
     handleResize() {
       // 获取所有图表并调整大小
       const chartIds = [
@@ -3401,6 +3471,70 @@ export default {
       if (reportDocument) {
         reportDocument.innerHTML = '';
       }
+    },
+    
+    // 从会话存储中加载数据
+    loadSessionData() {
+      try {
+        // 加载题库数据
+        const sessionData = sessionStorage.getItem('questionBank');
+        if (sessionData) {
+          const parsedQuestions = JSON.parse(sessionData);
+          // 更新题库选择列表
+          this.availableQuestions = parsedQuestions.map(q => ({
+            id: q.id,
+            prompt: q.prompt,
+            type: q.type,
+            selected: true
+          }));
+          
+          // 按题型分组
+          this.updateQuestionGroups(this.availableQuestions);
+          console.log(`已从会话中恢复${this.availableQuestions.length}道题目`);
+        } 
+        
+        // 加载审计结果
+        const auditData = sessionStorage.getItem('auditResults');
+        if (auditData) {
+          this.auditResults = JSON.parse(auditData);
+          console.log(`已从会话中恢复${this.auditResults.length}条审计结果`);
+          
+          if (this.auditResults.length > 0) {
+            // 重新计算统计数据
+            this.statsSummary = this.calculateStatisticsFromResults(this.auditResults);
+            
+            // 数据加载完成后初始化所有图表
+            this.$nextTick(() => {
+              this.initializeAllCharts();
+            });
+          }
+        }
+      } catch (error) {
+        console.error('从会话加载数据失败:', error);
+      }
+    },
+    
+    // 清空所有审计结果
+    clearAllResults() {
+      this.$confirm({
+        title: '确认清空所有结果',
+        content: '此操作将删除所有测试结果，无法恢复。确定要继续吗？',
+        okText: '确定',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk: () => {
+          this.auditResults = [];
+          this.statsSummary = null;
+          
+          // 清空会话存储
+          sessionStorage.removeItem('auditResults');
+          
+          // 清空图表
+          this.destroyCharts();
+          
+          this.$message.success('已清空所有测试结果');
+        },
+      });
     },
   },
   // 生命周期钩子

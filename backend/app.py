@@ -315,22 +315,7 @@ def transform_questions():
             'message': str(e)
         }), 500
 
-@app.route('/api/questions/get-transformed', methods=['GET'])
-def get_transformed_questions():
-    """获取已保存的变形题库"""
-    global transformed_question_bank
-    try:
-        # 提供已保存的变形题库
-        return jsonify({
-            'success': True,
-            'data': transformed_question_bank
-        })
-    except Exception as e:
-        logger.error(f"获取变形题库时出错: {str(e)}")
-        return jsonify({
-            'success': False,
-            'message': str(e)
-        }), 500
+
 
 @app.route('/api/questions/transformed-bank', methods=['GET'])
 def get_transformed_bank():
@@ -374,36 +359,6 @@ def clear_transformed_questions():
             'message': str(e)
         }), 500
 
-@app.route('/api/questions/save-transformed', methods=['POST'])
-def save_transformed_questions():
-    """保存变形后的题库"""
-    global transformed_question_bank
-    try:
-        data = request.get_json()
-        questions = data.get('questions', [])
-        
-        if not questions:
-            return jsonify({
-                'success': False,
-                'message': '没有可保存的题目'
-            }), 400
-        
-        transformed_question_bank = questions
-        
-        return jsonify({
-            'success': True,
-            'message': f'成功保存{len(questions)}道变形题目',
-            'data': {
-                'count': len(questions)
-            }
-        })
-    
-    except Exception as e:
-        logger.error(f"保存变形题库时出错: {str(e)}")
-        return jsonify({
-            'success': False,
-            'message': str(e)
-        }), 500
 
 @app.route('/api/questions/export-transformed-json', methods=['POST'])
 def export_transformed_json():
@@ -564,14 +519,6 @@ def preview_report():
             'success': False,
             'message': f'生成预览失败: {str(e)}'
         }), 500
-
-@app.route('/api/heartbeat', methods=['GET'])
-def heartbeat():
-    """心跳检测接口，返回后端启动时间戳"""
-    return jsonify({
-        'status': 'ok',
-        'timestamp': STARTUP_TIMESTAMP
-    })
 
 # 前端路由
 @app.route('/', defaults={'path': ''})

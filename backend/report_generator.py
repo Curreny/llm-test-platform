@@ -343,11 +343,11 @@ class ReportGenerator:
             
         # 针对响应时间
         if avg_response_time > 2000:  # 假设2秒为阈值
-            recommendations.append(f"模型在{slowest_type}类问题上响应时间较长（{max_time}ms），建议针对此类问题优化推理性能，可以考虑模型量化或推理加速技术。")
+            recommendations.append(f"模型在{slowest_type}类问题上响应时间较长（{max_time}s），建议针对此类问题优化推理性能，可以考虑模型量化或推理加速技术。")
         elif avg_response_time > 1000:  # 超过1秒为中等响应速度
-            recommendations.append(f"模型响应时间（{avg_response_time}ms）处于中等水平，在实时交互场景中可进一步优化。建议尝试KV缓存或并行计算提升速度。")
+            recommendations.append(f"模型响应时间（{avg_response_time}s）处于中等水平，在实时交互场景中可进一步优化。建议尝试KV缓存或并行计算提升速度。")
         else:
-            recommendations.append(f"模型响应速度表现优秀（{avg_response_time}ms），有利于提供流畅的用户体验。")
+            recommendations.append(f"模型响应速度表现优秀（{avg_response_time}s），有利于提供流畅的用户体验。")
         
         # 针对领域表现
         if domain_pass_rates:
@@ -396,7 +396,7 @@ class ReportGenerator:
             recommendations.append(f"模型内存占用较高（{avg_resources['memoryUsage']/1024:.1f}GB），建议考虑模型压缩或量化技术降低资源消耗，以便在资源受限环境部署。")
         
         if avg_resources['inferenceTime'] > 3000:  # 推理时间超过3秒
-            recommendations.append(f"模型推理时间较长（{avg_resources['inferenceTime']}ms），可考虑使用模型蒸馏、张量并行或优化部署环境提升响应速度。")
+            recommendations.append(f"模型推理时间较长（{avg_resources['inferenceTime']}s），可考虑使用模型蒸馏、张量并行或优化部署环境提升响应速度。")
             
         if avg_resources['computeLoad'] > 80:  # 计算负载过高
             recommendations.append(f"模型计算负载较高（{avg_resources['computeLoad']}%），在高并发环境下可能存在性能瓶颈，建议进行服务扩容或负载均衡。")
@@ -833,7 +833,7 @@ class ReportGenerator:
                 <div class="report-meta">
                     <div>📝 测试题目总数: <strong>{{ totalQuestions }}</strong></div>
                     <div>✅ 整体正确率: <strong>{{ passRate }}%</strong></div>
-                    <div>⏱️ 平均响应时间: <strong>{{ avgResponseTime }}ms</strong></div>
+                    <div>⏱️ 平均响应时间: <strong>{{ avgResponseTime }}s</strong></div>
                 </div>
                 
                 {% if 'summary' in sections %}
@@ -848,7 +848,7 @@ class ReportGenerator:
                         </div>
                         <div class="metric-card">
                             <div class="metric-title">⏱️ 平均响应时间</div>
-                            <div class="metric-value">{{ avgResponseTime }}<span class="metric-suffix">ms</span></div>
+                            <div class="metric-value">{{ avgResponseTime }}<span class="metric-suffix">s</span></div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-title">⚠️ 安全薄弱环节</div>
@@ -878,7 +878,7 @@ class ReportGenerator:
                         <tbody>
                             <tr>
                                 <td>🔄 推理时间</td>
-                                <td>{{ avgResources.inferenceTime|round(1) }}ms</td>
+                                <td>{{ avgResources.inferenceTime|round(1) }}s</td>
                                 <td>模型生成答案的推理过程耗时，包含安全检查开销</td>
                             </tr>
                             <tr>
@@ -895,12 +895,12 @@ class ReportGenerator:
                     </table>
                     
                     <h3 class="sub-section-title">⏱️ 2.2 安全响应时间分析</h3>
-                    <p>模型在{{ slowestType }}类问题上耗时最长，平均响应时间为{{ maxResponseTime|round(1) }}ms，可能与该题型安全检查复杂度相关。</p>
+                    <p>模型在{{ slowestType }}类问题上耗时最长，平均响应时间为{{ maxResponseTime|round(1) }}s，可能与该题型安全检查复杂度相关。</p>
                     <table>
                         <thead>
                             <tr>
                                 <th>题型</th>
-                                <th>平均响应时间(ms)</th>
+                                <th>平均响应时间(s)</th>
                             </tr>
                         </thead>
                         <tbody>

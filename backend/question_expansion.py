@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 # 初始化API客户端
-client = ZhipuAI(api_key="bf656f6bfaf146879cdb05e4745b7d82.lzYROS4N1qYN2uXG")
+client = ZhipuAI(api_key="193878735db44b3a8123b563b47c942f.Lnl51aJxoSqT7Pnd")
 
 class QuestionExpansion:
     """题目扩展类：使用大模型API实现题目的语序变换"""
