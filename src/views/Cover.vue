@@ -8,13 +8,13 @@
           <h3><img src="/images/logo-ct-white.png" style="width: 35px; height: 35px;">飞舞不会coding</h3>
         </div>
         <div class="navbar-links">
-          <a href="#home" class="nav-link active">主页</a>
-          <a href="/question-generate" class="nav-link">观测题库生成</a>
-          <a href="/question-expansion" class="nav-link">观测题库拓展</a>
-          <a href="/data-audit" class="nav-link">模型响应检测</a>
-          <a @click="navigateTo('/data-audit#results-preview')" class="nav-link">结果生成</a>
-          <a @click="navigateTo('/data-audit#report-generation')" class="nav-link">报告生成</a>
-          <a @click="navigateTo('/api-integration')" class="nav-link">观测调用</a>
+          <router-link to="/" class="nav-link active">主页</router-link>
+          <router-link to="/question-generate" class="nav-link">观测题库生成</router-link>
+          <router-link to="/question-expansion" class="nav-link">观测题库拓展</router-link>
+          <router-link to="/data-audit" class="nav-link">模型响应检测</router-link>
+          <router-link @click.native="navigateTo('/data-audit#results-preview')" to="/data-audit" class="nav-link">检测结果预览</router-link>
+          <router-link @click.native="navigateTo('/data-audit#report-generation')" to="/data-audit" class="nav-link">报告生成与预览</router-link>
+          <router-link to="/api-integration" class="nav-link">观测调用</router-link>
         </div>
         <div class="navbar-actions">
           <a href="#" class="nav-icon">

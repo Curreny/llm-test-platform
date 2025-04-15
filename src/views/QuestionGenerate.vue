@@ -5,10 +5,10 @@
       <a-col :span="24">
         <a-card :bordered="false" class="header-card">
           <div class="card-header mb-15">
-            <h2 class="font-bold">观测题库生成模块</h2>
+            <h2 class="font-bold">📚观测题库生成</h2>
           </div>
           <p class="problem-text">
-            自动化生成大模型性能观测题库，支持多种题型和生成方式，提供500+高质量测试题目。
+            能够根据用户输入，自动化生成大模型性能观测题库，题目形式不限于选择、简答与判断等，题目内容来源丰富，测试题库单次可生成3000题。
           </p>
         </a-card>
       </a-col>
@@ -267,7 +267,7 @@
                 <div class="question-content">
                   <div class="question-tags">
                     <a-tag :color="getTypeColor(question.type)">{{getTypeName(question.type)}}</a-tag>
-                    <a-tag color="blue">{{question.domain || '未分类'}}</a-tag>
+                    <a-tag color="blue">{{question.domain || 'other domain'}}</a-tag>
                     <a-tag color="purple">{{getSourceName(question.source)}}</a-tag>
                     <a-tag color="green">ID: {{question.id}}</a-tag>
                   </div>
@@ -485,7 +485,7 @@ export default {
     domainStats() {
       const domains = {};
       this.questions.forEach(q => {
-        const domain = q.domain || '未分类';
+        const domain = q.domain || 'other domain';
         domains[domain] = (domains[domain] || 0) + 1;
       });
       
@@ -791,7 +791,9 @@ export default {
 .question-generate-container {
   padding: 10px;
 }
-
+.header-card{
+  background: linear-gradient(135deg, #f5f7fa, #ebf0f6);
+}
 /* 控制面板样式 */
 .control-panel {
   background-color: #fff;

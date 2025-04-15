@@ -5,10 +5,10 @@
         <a-col :span="24">
           <a-card :bordered="false" class="header-card">
             <div class="card-header mb-15">
-              <h2 class="font-bold">观测题库拓展</h2>
+              <h2 class="font-bold">🛠️观测题库拓展</h2>
             </div>
             <p class="problem-text">
-              自动化拓展测试题库，支持多种变形方式，有效性不低于90%。
+              能够自动化拓展测试题库，根据生成的测试题库，能够对测试题库进行"变形"，变形方式可任选6种，变形后的题目有效性达95%。
             </p>
           </a-card>
         </a-col>
@@ -19,7 +19,7 @@
         <a-col :span="24" :lg="12" class="mb-24">
           <a-card :bordered="false" class="control-panel" style="height: 350px;">
             <div class="card-header mb-15">
-              <h3 class="font-bold">题库扩展设置</h3>
+              <h3 class="font-bold">题库拓展设置</h3>
             </div>
             
             <!-- 导入题目按钮 -->
@@ -315,7 +315,7 @@
                     <div class="question-header">
                       <div class="question-tags">
                         <a-tag :color="getTypeColor(item.type)">{{getTypeName(item.type)}}</a-tag>
-                        <a-tag color="blue">{{item.domain || '未分类'}}</a-tag>
+                        <a-tag color="blue">{{item.domain || 'other domain'}}</a-tag>
                         <a-tag color="purple">{{getSourceName(item.source)}}</a-tag>
                         <a-tag color="green">ID: {{item.id}}</a-tag>
                       </div>
@@ -639,7 +639,7 @@
       domainStats() {
         const domains = {};
         this.transformedQuestions.forEach(q => {
-          const domain = q.domain || '未分类';
+          const domain = q.domain ||'other domain';
           domains[domain] = (domains[domain] || 0) + 1;
         });
         
@@ -1086,6 +1086,9 @@
 </script>
   
 <style lang="scss" scoped>
+.header-card{
+  background: linear-gradient(135deg, #f5f7fa, #ebf0f6);
+}
 .question-expansion-container {
   padding: 10px;
 }

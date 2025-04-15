@@ -6,7 +6,9 @@ import logging
 from io import BytesIO
 import json
 import time
-import zipfile  # 添加zipfile用于创建SDK包
+import shutil
+import zipfile
+import functools
 
 # 导入题库管理模块
 from question_generate import QuestionGenerateManager, ExportManager
@@ -31,19 +33,94 @@ transformed_question_bank = []
 # 启动时间戳，用于前端检测后端是否重启
 STARTUP_TIMESTAMP = str(int(time.time()))
 
-# SDK包版本
-SDK_VERSION = "0.1.0"
+# ==================== SDK相关API ====================
 
-# SDK API密钥管理
-SDK_API_KEYS = {
-    "demo_key": {
-        "owner": "Demo User", 
-        "created_at": "2025-04-01", 
-        "permissions": ["generate", "transform", "audit"]
-    }
-}
+@app.route('/api/sdk/download', methods=['GET'])
+def download_sdk():
+    """下载SDK包"""
+    temp_dir = None
+    try:
+        # 创建临时目录来打包SDK
+        temp_dir = os.path.join(os.path.dirname(__file__), 'temp_sdk')
+        if os.path.exists(temp_dir):
+            shutil.rmtree(temp_dir)
+        os.makedirs(temp_dir)
+        
+        # 复制SDK文件到临时目录
+        sdk_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'sdk')
+        shutil.copytree(sdk_dir, os.path.join(temp_dir, 'modelsafety-sdk'))
+        
+        # 创建内存流而不是文件
+        memory_file = BytesIO()
+        
+        # 直接写入内存流
+        with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            for root, dirs, files in os.walk(os.path.join(temp_dir, 'modelsafety-sdk')):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    zipf.write(
+                        file_path, 
+                        arcname=os.path.relpath(file_path, temp_dir)
+                    )
+        
+        # 重置内存流位置
+        memory_file.seek(0)
+        
+        # 清理临时文件夹，在发送文件之前
+        if os.path.exists(temp_dir):
+            shutil.rmtree(temp_dir)
+            temp_dir = None
+        
+        # 从内存流发送文件
+        return send_file(
+            memory_file, 
+            as_attachment=True,
+            download_name='modelsafety-sdk.zip',
+            mimetype='application/zip'
+        )
+    
+    except Exception as e:
+        logger.error(f"下载SDK时出错: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': f'下载SDK时出错: {str(e)}'
+        }), 500
+    
+    finally:
+        # 确保临时目录被清理
+        if temp_dir and os.path.exists(temp_dir):
+            try:
+                shutil.rmtree(temp_dir)
+            except Exception as e:
+                logger.error(f"清理临时目录时出错: {str(e)}")
 
-# 审核模块 API 路由
+@app.route('/api/sdk/docs', methods=['GET'])
+def get_sdk_docs():
+    """获取SDK文档"""
+    try:
+        # 这里简单返回README.md的内容作为文档
+        readme_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'sdk', 'README.md')
+        
+        with open(readme_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'content': content,
+                'format': 'markdown'
+            }
+        })
+    
+    except Exception as e:
+        logger.error(f"获取SDK文档时出错: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': f'获取SDK文档时出错: {str(e)}'
+        }), 500
+
+# ==================== 审核模块 API 路由 ====================
+
 @app.route('/api/audit/test-models', methods=['POST'])
 def test_models():
     """测试模型响应"""
@@ -328,8 +405,6 @@ def transform_questions():
             'message': str(e)
         }), 500
 
-
-
 @app.route('/api/questions/transformed-bank', methods=['GET'])
 def get_transformed_bank():
     """获取拓展题库（原始题目和变形题目）"""
@@ -371,7 +446,6 @@ def clear_transformed_questions():
             'success': False,
             'message': str(e)
         }), 500
-
 
 @app.route('/api/questions/export-transformed-json', methods=['POST'])
 def export_transformed_json():
@@ -441,454 +515,96 @@ def export_transformed_excel():
             'message': str(e)
         }), 500
 
-# SDK相关API路由
-@app.route('/api/sdk/download', methods=['GET'])
-def download_sdk():
-    """下载SDK包"""
+# 报告生成API路由
+@app.route('/api/audit/generate-report', methods=['POST'])
+def generate_report():
+    """生成审计报告"""
     try:
-        # 创建内存中的ZIP文件
-        memory_file = BytesIO()
-        with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zf:
-            # 添加SDK包的文件
-            
-            # 添加setup.py
-            setup_py = f"""
-from setuptools import setup, find_packages
-
-setup(
-    name="safety_bench_sdk",
-    version="{SDK_VERSION}",
-    packages=find_packages(),
-    install_requires=[
-        "requests>=2.25.0",
-        "pandas>=1.0.0",
-        "python-dotenv>=0.15.0",
-    ],
-    author="Safety Bench Team",
-    author_email="support@safetybench.com",
-    description="Python SDK for Safety Bench Platform",
-    long_description=open("README.md").read(),
-    long_description_content_type="text/markdown",
-    url="https://safetybench.com",
-    classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
-    ],
-    python_requires=">=3.6",
-)
-"""
-            zf.writestr('setup.py', setup_py)
-            
-            # 添加README.md
-            readme_md = """# Safety Bench SDK
-
-Python SDK for Safety Bench Platform
-
-## 安装
-
-```bash
-pip install safety_bench_sdk
-```
-
-## 使用方法
-
-```python
-from safety_bench_sdk import SafetyBenchClient
-
-# 初始化客户端
-client = SafetyBenchClient(api_key="your_api_key")
-
-# 生成问题
-questions = client.generate_questions(types=["single", "judge"], count={"single": 10, "judge": 5})
-
-# 变形问题
-transformed = client.transform_questions(questions, method="语序变换")
-
-# 审核模型响应
-audit_results = client.audit_responses(questions, responses, models=["gpt-3.5-turbo", "claude-2"])
-
-# 获取报告
-report = client.generate_report(audit_results, format="pdf")
-```
-"""
-            zf.writestr('README.md', readme_md)
-            
-            # 创建SDK包结构
-            
-            # __init__.py
-            init_py = """from .client import SafetyBenchClient
-
-__version__ = "{}"
-""".format(SDK_VERSION)
-            zf.writestr('safety_bench_sdk/__init__.py', init_py)
-            
-            # client.py
-            client_py = """import requests
-import os
-import json
-from typing import List, Dict, Any, Optional, Union
-import logging
-
-class SafetyBenchClient:
-    \"\"\"Safety Bench API 客户端\"\"\"
-    
-    def __init__(self, api_key: str = None, base_url: str = "https://api.safetybench.com"):
-        self.api_key = api_key or os.environ.get("SAFETY_BENCH_API_KEY")
-        if not self.api_key:
-            raise ValueError("API key is required. Set it during initialization or with SAFETY_BENCH_API_KEY environment variable.")
+        data = request.json
+        results = data.get('results', [])
+        summary = data.get('summary', {})
+        report_format = data.get('format', 'pdf')  # 默认PDF格式
+        sections = data.get('sections', ['summary', 'performance', 'charts', 'recommendations'])
         
-        self.base_url = base_url
-        self.session = requests.Session()
-        self.session.headers.update({
-            "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json"
-        })
-    
-    def generate_questions(self, types: List[str], count: Dict[str, int]) -> List[Dict]:
-        \"\"\"生成题库
+        logger.info(f"接收到报告生成请求: 格式={report_format}, 部分={sections}, 结果数量={len(results)}")
         
-        Args:
-            types: 题目类型列表，如 ["single", "judge", "essay"]
-            count: 各类型题目数量，如 {"single": 10, "judge": 5}
-            
-        Returns:
-            生成的题目列表
-        \"\"\"
-        response = self.session.post(
-            f"{self.base_url}/api/questions/generate",
-            json={"typesRequest": types, "domains": [], "count": count}
+        if not results:
+            return jsonify({
+                'success': False,
+                'message': '没有审计结果，无法生成报告'
+            }), 400
+        
+        # 检查格式
+        if report_format not in ['pdf', 'html']:
+            return jsonify({
+                'success': False,
+                'message': f'不支持的报告格式: {report_format}'
+            }), 400
+        
+        # 生成报告
+        output, filename = ReportGenerator.generate_report(
+            results, 
+            summary, 
+            report_format, 
+            sections
         )
-        response.raise_for_status()
-        data = response.json()
         
-        if not data.get("success"):
-            raise Exception(f"API返回错误: {data.get('message', '未知错误')}")
+        # 从内存直接发送文件
+        mimetype = {
+            'pdf': 'application/pdf',
+            'html': 'text/html'
+        }.get(report_format, 'application/octet-stream')
         
-        return data.get("data", [])
-    
-    def transform_questions(self, questions: List[Dict], method: str = "语序变换") -> Dict:
-        \"\"\"变形题库
-        
-        Args:
-            questions: 题目列表
-            method: 变形方法，可选值: 语序变换, 同义词替换, 选项扰动, 上下文调整
-            
-        Returns:
-            变形结果
-        \"\"\"
-        response = self.session.post(
-            f"{self.base_url}/api/questions/transform",
-            json={"questions": questions, "method": method}
-        )
-        response.raise_for_status()
-        data = response.json()
-        
-        if not data.get("success"):
-            raise Exception(f"API返回错误: {data.get('message', '未知错误')}")
-        
-        return data.get("data", {})
-    
-    def audit_responses(self, questions: List[Dict], responses: List[Dict], 
-                       models: List[str], audit_mode: str = "rule-based") -> Dict:
-        \"\"\"审核模型响应
-        
-        Args:
-            questions: 题目列表
-            responses: 模型回答列表
-            models: 要测试的模型列表
-            audit_mode: 审核模式，可选值: rule-based, content-based, combination
-            
-        Returns:
-            审核结果
-        \"\"\"
-        response = self.session.post(
-            f"{self.base_url}/api/audit/test-models",
-            json={
-                "questions": questions,
-                "models": models,
-                "auditMode": audit_mode
-            }
-        )
-        response.raise_for_status()
-        data = response.json()
-        
-        if not data.get("success"):
-            raise Exception(f"API返回错误: {data.get('message', '未知错误')}")
-        
-        return {
-            "results": data.get("results", []),
-            "summary": data.get("summary", {})
-        }
-    
-    def generate_report(self, audit_results: Dict, format: str = "pdf", 
-                       sections: List[str] = ["summary", "performance", "charts", "recommendations"]) -> bytes:
-        \"\"\"生成审计报告
-        
-        Args:
-            audit_results: 审核结果
-            format: 报告格式, 可选值: pdf, html
-            sections: 报告包含的部分
-            
-        Returns:
-            报告内容的二进制数据
-        \"\"\"
-        response = self.session.post(
-            f"{self.base_url}/api/audit/generate-report",
-            json={
-                "results": audit_results.get("results", []),
-                "summary": audit_results.get("summary", {}),
-                "format": format,
-                "sections": sections
-            }
-        )
-        response.raise_for_status()
-        return response.content
-"""
-            zf.writestr('safety_bench_sdk/client.py', client_py)
-            
-            # models.py
-            models_py = """from typing import List, Dict, Any, Optional, Union
-from dataclasses import dataclass
-
-
-@dataclass
-class Question:
-    \"\"\"问题数据结构\"\"\"
-    id: str
-    prompt: str
-    type: str
-    options: Optional[List[str]] = None
-    answer: Optional[str] = None
-    
-    @classmethod
-    def from_dict(cls, data: Dict) -> 'Question':
-        return cls(
-            id=data.get('id', ''),
-            prompt=data.get('问题', ''),
-            type=data.get('题型', ''),
-            options=data.get('选项', []),
-            answer=data.get('答案', '')
-        )
-    
-    def to_dict(self) -> Dict:
-        result = {
-            'id': self.id,
-            '问题': self.prompt,
-            '题型': self.type,
-        }
-        if self.options:
-            result['选项'] = self.options
-        if self.answer:
-            result['答案'] = self.answer
-        return result
-
-
-@dataclass
-class AuditResult:
-    \"\"\"审核结果数据结构\"\"\"
-    question_id: str
-    model: str
-    response: str
-    is_pass: bool
-    score: float
-    reason: Optional[str] = None
-    
-    @classmethod
-    def from_dict(cls, data: Dict) -> 'AuditResult':
-        return cls(
-            question_id=data.get('question_id', ''),
-            model=data.get('model', ''),
-            response=data.get('response', ''),
-            is_pass=data.get('is_pass', False),
-            score=data.get('score', 0.0),
-            reason=data.get('reason')
-        )
-"""
-            zf.writestr('safety_bench_sdk/models.py', models_py)
-            
-            # utils.py
-            utils_py = """import os
-import json
-import pandas as pd
-from typing import List, Dict, Any, Optional, Union
-import logging
-
-def load_questions_from_json(file_path: str) -> List[Dict]:
-    \"\"\"从JSON文件加载问题\"\"\"
-    with open(file_path, 'r', encoding='utf-8') as f:
-        return json.load(f)
-
-def save_questions_to_json(questions: List[Dict], file_path: str) -> None:
-    \"\"\"将问题保存到JSON文件\"\"\"
-    with open(file_path, 'w', encoding='utf-8') as f:
-        json.dump(questions, f, ensure_ascii=False, indent=2)
-
-def load_questions_from_excel(file_path: str) -> List[Dict]:
-    \"\"\"从Excel文件加载问题\"\"\"
-    df = pd.read_excel(file_path)
-    questions = []
-    for _, row in df.iterrows():
-        question = {k: v for k, v in row.items() if not pd.isna(v)}
-        questions.append(question)
-    return questions
-
-def save_report_to_file(report_content: bytes, file_path: str) -> None:
-    \"\"\"将报告保存到文件\"\"\"
-    with open(file_path, 'wb') as f:
-        f.write(report_content)
-"""
-            zf.writestr('safety_bench_sdk/utils.py', utils_py)
-        
-        # 设置文件指针到开始位置
-        memory_file.seek(0)
-        
-        # 发送ZIP文件
         return send_file(
-            memory_file,
+            output,
             as_attachment=True,
-            download_name=f"safety_bench_sdk-{SDK_VERSION}.zip",
-            mimetype='application/zip'
+            download_name=filename,
+            mimetype=mimetype
         )
     
     except Exception as e:
-        logger.error(f"下载SDK时出错: {str(e)}")
+        logger.error(f"生成报告时出错: {str(e)}", exc_info=True)
         return jsonify({
-            "success": False,
-            "message": f"下载SDK时出错: {str(e)}"
+            'success': False,
+            'message': f'生成报告时出错: {str(e)}'
         }), 500
 
-@app.route('/api/sdk/docs', methods=['GET'])
-def get_sdk_docs():
-    """获取SDK文档"""
+@app.route('/api/audit/preview-report', methods=['POST'])
+def preview_report():
+    """预览报告API"""
     try:
-        docs = {
-            "version": SDK_VERSION,
-            "description": "Safety Bench Python SDK",
-            "installation": "pip install safety_bench_sdk",
-            "endpoints": [
-                {
-                    "name": "generate_questions",
-                    "description": "生成题库",
-                    "parameters": {
-                        "types": "题目类型列表，如 [\"single\", \"judge\", \"essay\"]",
-                        "count": "各类型题目数量，如 {\"single\": 10, \"judge\": 5}"
-                    },
-                    "example": "client.generate_questions(types=[\"single\", \"judge\"], count={\"single\": 10, \"judge\": 5})"
-                },
-                {
-                    "name": "transform_questions",
-                    "description": "变形题库",
-                    "parameters": {
-                        "questions": "题目列表",
-                        "method": "变形方法，可选值: 语序变换, 同义词替换, 选项扰动, 上下文调整"
-                    },
-                    "example": "client.transform_questions(questions, method=\"语序变换\")"
-                },
-                {
-                    "name": "audit_responses",
-                    "description": "审核模型响应",
-                    "parameters": {
-                        "questions": "题目列表",
-                        "responses": "模型回答列表",
-                        "models": "要测试的模型列表",
-                        "audit_mode": "审核模式，可选值: rule-based, content-based, combination"
-                    },
-                    "example": "client.audit_responses(questions, responses, models=[\"gpt-3.5-turbo\", \"claude-2\"])"
-                },
-                {
-                    "name": "generate_report",
-                    "description": "生成审计报告",
-                    "parameters": {
-                        "audit_results": "审核结果",
-                        "format": "报告格式, 可选值: pdf, html",
-                        "sections": "报告包含的部分，可选值: summary, performance, charts, recommendations"
-                    },
-                    "example": "client.generate_report(audit_results, format=\"pdf\")"
-                }
-            ]
-        }
+        data = request.json
+        
+        if not data or 'results' not in data:
+            return jsonify({
+                'success': False,
+                'message': '缺少必要的结果数据'
+            }), 400
+        
+        results = data.get('results', [])
+        summary = data.get('summary', {})
+        sections = data.get('sections', ['summary', 'performance', 'charts', 'recommendations'])
+        
+        if not results:
+            return jsonify({
+                'success': False,
+                'message': '审计结果为空，无法生成报告'
+            }), 400
+            
+        # 使用ReportGenerator生成预览HTML
+        preview_data = ReportGenerator.generate_preview(results, summary, sections)
         
         return jsonify({
-            "success": True,
-            "data": docs
+            'success': True,
+            'preview': preview_data['html'],
+            'data': preview_data['data']
         })
-    
+        
     except Exception as e:
-        logger.error(f"获取SDK文档时出错: {str(e)}")
+        print(f"生成报告预览时出错: {str(e)}")
         return jsonify({
-            "success": False,
-            "message": f"获取SDK文档时出错: {str(e)}"
-        }), 500
-
-@app.route('/api/sdk/api-keys', methods=['GET', 'POST', 'DELETE'])
-def manage_api_keys():
-    """管理API密钥"""
-    try:
-        if request.method == 'GET':
-            # 获取API密钥列表（实际项目中，应该基于身份验证来筛选可见的密钥）
-            # 这里简单返回模拟数据
-            keys_info = [
-                {"key": f"{k[:4]}...{k[-4:]}", "owner": v["owner"], "created_at": v["created_at"], "permissions": v["permissions"]}
-                for k, v in SDK_API_KEYS.items()
-            ]
-            
-            return jsonify({
-                "success": True,
-                "data": keys_info
-            })
-            
-        elif request.method == 'POST':
-            # 生成新的API密钥
-            data = request.get_json()
-            owner = data.get('owner', 'Unknown User')
-            permissions = data.get('permissions', ["generate", "transform", "audit"])
-            
-            # 生成随机API密钥（实际项目中，应使用更安全的方法）
-            import uuid
-            new_key = f"sk-{uuid.uuid4().hex}"
-            
-            # 存储API密钥（实际项目中，应存储在数据库中）
-            SDK_API_KEYS[new_key] = {
-                "owner": owner,
-                "created_at": time.strftime("%Y-%m-%d"),
-                "permissions": permissions
-            }
-            
-            return jsonify({
-                "success": True,
-                "data": {
-                    "key": new_key,
-                    "owner": owner,
-                    "created_at": SDK_API_KEYS[new_key]["created_at"],
-                    "permissions": permissions
-                }
-            })
-            
-        elif request.method == 'DELETE':
-            # 删除API密钥
-            data = request.get_json()
-            key = data.get('key')
-            
-            if not key or key not in SDK_API_KEYS:
-                return jsonify({
-                    "success": False,
-                    "message": "无效的API密钥"
-                }), 400
-            
-            # 删除密钥
-            del SDK_API_KEYS[key]
-            
-            return jsonify({
-                "success": True,
-                "message": "API密钥已删除"
-            })
-            
-    except Exception as e:
-        logger.error(f"管理API密钥时出错: {str(e)}")
-        return jsonify({
-            "success": False,
-            "message": f"管理API密钥时出错: {str(e)}"
+            'success': False,
+            'message': f'生成预览失败: {str(e)}'
         }), 500
 
 # 前端路由
@@ -897,8 +613,12 @@ def manage_api_keys():
 @app.route('/question-generate')
 @app.route('/question-expansion')
 @app.route('/data-audit')
-@app.route('/api-integration')  # 添加SDK页面路由
-def frontend_routes(path=None):
+@app.route('/api-integration')
+@app.route('/sign-in')
+@app.route('/sign-up')
+
+
+def frontend_routes(path=None, subpath=None):
     return send_from_directory('../dist', 'index.html')
 
 # 处理静态资源

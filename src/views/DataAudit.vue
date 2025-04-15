@@ -5,10 +5,10 @@
       <a-col :span="24">
         <a-card :bordered="false" class="header-card">
           <div class="card-header mb-15">
-            <h2 class="font-bold">模型响应检测</h2>
+            <h2 class="font-bold">📶模型响应检测</h2>
           </div>
           <p class="problem-text">
-            对大模型的"输入-输出"进行自动或半自动检测，判定其是否准确、合理、合规。实现不同检测模式间的切换，并支持可视化统计与人工修正。
+            针对大模型测试结果，平台能够自动审核测试结果，并将大模型输入、输出与判定结果进行页面展示，支持规则匹配和模型辅助2种审核模式，且自动化判定审核成功率大于90%。
           </p>
         </a-card>
       </a-col>
@@ -200,9 +200,9 @@
       <!-- 下侧主区域 -->
       <a-col :span="24" :lg="24">
     <!-- 空状态 -->
-        <a-card v-if="auditResults.length === 0 && !isAuditing" :bordered="false" class="empty-state-card" id="results-preview">
+        <a-card v-if="auditResults.length === 0 && !isAuditing" :bordered="false" class="empty-state-card">
           <div class="card-header mb-15">
-            <h3 class="font-bold" style="font-size: 28px;">检测结果预览</h3>
+            <h3 class="font-bold" style="font-size: 28px;">📊检测结果预览</h3>
           </div>
           <div class="empty-state">
             <div class="empty-content">
@@ -211,7 +211,7 @@
               </svg>
               <p class="empty-text">
                 暂无模型测试与检测结果<br/>
-                请导入题库、选择测试模型和检测模式，然后点击「开始模型测试与检测」按钮
+                请导入题库、选择测试模型和检测模式，然后点击「开始模型检测」按钮
               </p>
             </div>
           </div>
@@ -219,9 +219,9 @@
 
 
         <!-- 结果展示区 -->
-        <a-card v-else :bordered="false" class="questions-display">
+        <a-card v-else :bordered="false" class="questions-display"id="results-preview">
           <div class="card-header mb-15">
-            <h2 class="font-bold"style="font-size: 28px;">检测结果预览</h2>
+            <h2 class="font-bold"style="font-size: 28px;">📊检测结果预览</h2>
           </div>
           
           <!-- 检测进度展示 -->
@@ -650,7 +650,7 @@
       <a-col :span="24">
         <a-card :bordered="false" class="report-card" id="report-generation">
           <div class="card-header mb-15">
-            <h2 class="font-bold" style="text-align: center;font-size: 28px;">报告生成与预览</h2>
+            <h2 class="font-bold" style="text-align: center;font-size: 28px;">📝报告生成与预览</h2>
           </div>
           
           <a-row :gutter="24">
@@ -764,7 +764,7 @@
       <a-col :span="24">
         <a-card :bordered="false" class="report-card" id="report-generation">
           <div class="card-header mb-15">
-            <h2 class="font-bold" style="text-align: center;font-size: 28px;">报告生成与预览</h2>
+            <h2 class="font-bold" style="text-align: center;font-size: 28px;">📝报告生成与预览</h2>
           </div>
           
           <div class="empty-state">
@@ -1758,7 +1758,7 @@ export default {
         // 根据报告格式决定操作
         if (this.reportFormat === 'html') {
           // HTML格式时，显示预览
-          this.showReportPreview(blob);
+          this.downloadReport(blob);
         } else {
           // PDF格式时，直接下载
           this.downloadReport(blob);
@@ -1830,6 +1830,28 @@ export default {
         essayCount,
         essayAvgScore
       };
+    },
+    
+    // 下载报告
+    downloadReport(blob) {
+      // 创建文件名（带有日期时间戳）
+      const now = new Date();
+      const timestamp = now.toISOString().replace(/[:.]/g, '-').slice(0, 19);
+      const fileName = `大模型性能评估报告-${timestamp}.${this.reportFormat}`;
+      
+      // 创建下载链接
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName);
+      
+      // 触发下载
+      document.body.appendChild(link);
+      link.click();
+      
+      // 清理
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
     },
     
     // 辅助方法 - 延迟函数
@@ -3151,7 +3173,7 @@ export default {
       
       // 首先收集所有领域
       this.auditResults.forEach(result => {
-        const domain = result.domain || '未分类';
+        const domain = result.domain || 'other domain';
         if (!domainData[domain]) {
           domainData[domain] = {
             // 总得分
@@ -3566,6 +3588,9 @@ export default {
 <style lang="scss" scoped>
 .data-audit-container {
   padding: 10px;
+}
+.header-card{
+  background: linear-gradient(135deg, #f5f7fa, #ebf0f6);
 }
 .mb-5 {
   margin-bottom: 5px;

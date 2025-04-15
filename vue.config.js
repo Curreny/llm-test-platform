@@ -24,5 +24,7 @@ module.exports = {
 	outputDir: 'dist',
 
 	// 确保API路径正确
-	publicPath: '/'
+	publicPath: '/',
+
+	assetsDir: 'static'      // 资源都打包进 dist/static
 }

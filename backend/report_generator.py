@@ -146,7 +146,7 @@ class ReportGenerator:
         # 领域分布与正确率
         domain_data = {}
         for r in results:
-            domain = r.get('domain', '未分类')
+            domain = r.get('domain', 'other domain')
             if domain not in domain_data:
                 domain_data[domain] = {'total': 0, 'passed': 0}
             
