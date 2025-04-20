@@ -25,9 +25,15 @@ import router from './router'
 // 引入ECharts
 import * as echarts from 'echarts'
 
+// 引入highlight.js用于代码高亮
+import VueHighlightJS from 'vue-highlightjs'
+import 'highlight.js/styles/github.css'
+
 import './scss/app.scss';
 
 Vue.use(Antd);
+// 使用highlight.js
+Vue.use(VueHighlightJS);
 
 // 将ECharts挂载到Vue原型上，方便组件内使用
 Vue.prototype.$echarts = echarts

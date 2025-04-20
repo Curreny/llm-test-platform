@@ -45,12 +45,6 @@ let routes = [
 		component: () => import('../views/ApiIntegration.vue'),
 	},
 	{
-		path: '/dashboard',
-		name: 'Dashboard',
-		layout: "dashboard",
-		component: () => import(/* webpackChunkName: "dashboard" */ '../views/Dashboard.vue'),
-	},
-	{
 		path: '/sign-in',
 		name: 'Sign-In',
 		component: () => import('../views/Sign-In.vue'),

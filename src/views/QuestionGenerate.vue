@@ -581,7 +581,7 @@ export default {
           });
         }
         
-        const response = await fetch('http://starvii.tpddns.cn:9004/api/questions/generate', {
+        const response = await fetch('/api/questions/generate', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -684,7 +684,7 @@ export default {
     async exportQuestions(format) {
       this.isGenerating = true;
       try {
-        const response = await fetch(`http://starvii.tpddns.cn:9004/api/questions/export-${format}`, {
+        const response = await fetch(`/api/questions/export-${format}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -739,7 +739,7 @@ export default {
         onOk: async () => {
           try {
             // 调用API清空题库
-            const response = await axios.post('http://starvii.tpddns.cn:9004/api/questions/clear-bank');
+            const response = await axios.post('/api/questions/clear-bank');
             
             if (response.data.success) {
               // 重置所有相关状态

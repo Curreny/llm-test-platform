@@ -57,7 +57,7 @@
         <!-- 问题说明卡片 -->
         <a-row :gutter="24" class="mb-24">
           <a-col :span="24">
-            <a-card :bordered="false" class="problem-card gradient-bg">
+            <a-card :bordered="false" class="problem-card gradient-bg scroll-animation">
               <div class="card-header mb-15">
                 <h2 class="font-bold">📢平台介绍</h2>
               </div>
@@ -71,7 +71,7 @@
         <!-- 特色统计卡片 -->
         <a-row :gutter="24" class="mb-24">
           <a-col :span="24" :lg="8" class="mb-24">
-            <a-card :bordered="false" class="widget-1 widget-1-blue">
+            <a-card :bordered="false" class="widget-1 widget-1-blue scroll-animation">
               <a-statistic
                 title="安全观测能力"
                 :value="93"
@@ -91,7 +91,7 @@
             </a-card>
           </a-col>
           <a-col :span="24" :lg="8" class="mb-24">
-            <a-card :bordered="false" class="widget-1 widget-1-purple">
+            <a-card :bordered="false" class="widget-1 widget-1-purple scroll-animation">
               <a-statistic
                 title="题库容量"
                 :value="150000"
@@ -108,7 +108,7 @@
             </a-card>
           </a-col>
           <a-col :span="24" :lg="8" class="mb-24">
-            <a-card :bordered="false" class="widget-1 widget-1-green">
+            <a-card :bordered="false" class="widget-1 widget-1-green scroll-animation">
               <a-statistic
                 title="审核成功率"
                 :value="98.34"
@@ -127,14 +127,14 @@
         </a-row>
 
         <!-- 用户期望部分 - 六个卡片 -->
-        <div class="card-header mb-15" id="product">
+        <div class="card-header mb-15 scroll-animation" id="product">
           <h2 class="font-bold">📊平台总览</h2>
         </div>
-        <a-row :gutter="24" type="flex" align="stretch">
+        <a-row :gutter="24" type="flex" align="stretch" class="scroll-animation">
           <!-- 观测题库生成模块 -->
           <a-col :span="24" :md="12" :xl="8" class="mb-24">
             <router-link to="/question-generate" class="card-link">
-              <a-card :bordered="false" class="feature-card feature-primary">
+              <a-card :bordered="false" class="feature-card feature-primary scroll-animation">
                 <h4 class="font-bold mb-2 ">📚&nbsp;观测题库生成</h4>
                 <p>能够根据用户输入，自动化生成大模型性能观测题库，题目形式不限于选择、简答与判断等，题目内容来源丰富，测试题库单次可生成3000题。</p>
                 <div class="card-footer">
@@ -148,7 +148,7 @@
           <!-- 观测题库拓展模块 -->
           <a-col :span="24" :md="12" :xl="8" class="mb-24">
             <router-link to="/question-expansion" class="card-link">
-              <a-card :bordered="false" class="feature-card feature-purple">
+              <a-card :bordered="false" class="feature-card feature-purple scroll-animation">
                 <h4 class="font-bold mb-2">🛠️&nbsp;观测题库拓展</h4>
                 <p>能够自动化拓展测试题库，根据生成的测试题库，能够对测试题库进行"变形"，变形方式可任选6种，变形后的题目有效性达95%。</p>
                 <div class="card-footer">
@@ -162,7 +162,7 @@
           <!-- 模型响应检测模块 -->
           <a-col :span="24" :md="12" :xl="8" class="mb-24">
             <router-link to="/data-audit#header-data-audit" class="card-link">
-              <a-card :bordered="false" class="feature-card feature-success">
+              <a-card :bordered="false" class="feature-card feature-success scroll-animation">
 
                 <h4 class="font-bold mb-2">📶&nbsp;模型响应检测</h4>
                 <p>针对大模型测试结果，平台能够自动审核测试结果，并将大模型输入、输出与判定结果进行页面展示，支持规则匹配和模型辅助2种审核模式，且自动化判定审核成功率大于90%。</p>
@@ -177,7 +177,7 @@
           <!-- 结果生成模块 -->
           <a-col :span="24" :md="12" :xl="8" class="mb-24">
             <router-link to="/data-audit#results-preview" class="card-link">
-              <a-card :bordered="false" class="feature-card feature-warning">
+              <a-card :bordered="false" class="feature-card feature-warning scroll-animation">
 
                 <h4 class="font-bold mb-2">📊&nbsp;检测结果预览</h4>
                 <p>平台根据模型响应检测能力，自动化生成测试总体结果，结果包括模型的性能、安全性、推理速度、精度、内存和计算资源的消耗情况等。</p>
@@ -192,7 +192,7 @@
           <!-- 自动化报告生成 -->
           <a-col :span="24" :md="12" :xl="8" class="mb-24">
             <router-link to="/data-audit#report-generation" class="card-link">
-              <a-card :bordered="false" class="feature-card feature-info">
+              <a-card :bordered="false" class="feature-card feature-info scroll-animation">
 
                 <h4 class="font-bold mb-2">📝&nbsp;报告生成与预览</h4>
                 <p>平台支持自动生成性能与安全性观测报告，包括HTML、PDF格式，供用户下载和审阅。</p>
@@ -207,7 +207,7 @@
           <!-- 观测调用形式 -->
           <a-col :span="24" :md="12" :xl="8" class="mb-24">
             <router-link to="/api-integration" class="card-link">
-              <a-card :bordered="false" class="feature-card feature-danger">
+              <a-card :bordered="false" class="feature-card feature-danger scroll-animation">
                 <h4 class="font-bold mb-2">🧩&nbsp;观测调用</h4>
                 <p>支持多样化平台调用形式，包括但不限于SDK、Saas等。</p>
                 <div class="card-footer">
@@ -220,14 +220,14 @@
           </a-col>
         
           <a-col :span="24" class="mb-50">
-            <a-card :bordered="false" class="team-card">
+            <a-card :bordered="false" class="team-card scroll-animation">
               <div class="card-header mb-15">
                 <h2 class="font-bold">🤝我们的团队</h2>
               </div>
               <div class="team-members">
                 <a-row :gutter="[48, 48]" type="flex" justify="center">
                   <a-col :span="24" :sm="12" :md="8" :lg="4" class="text-center">
-                    <div class="team-member">
+                    <div class="team-member scroll-animation">
                       <div class="member-avatar">
                         <img src="/images/avatar-1.png">
                       </div>
@@ -238,7 +238,7 @@
                     </div>
                   </a-col>
                   <a-col :span="24" :sm="12" :md="8" :lg="4" class="text-center">
-                    <div class="team-member">
+                    <div class="team-member scroll-animation">
                       <div class="member-avatar">
                         <img src="/images/avatar-2.png">
                       </div>
@@ -249,7 +249,7 @@
                     </div>
                   </a-col>
                   <a-col :span="24" :sm="12" :md="8" :lg="4" class="text-center">
-                    <div class="team-member">
+                    <div class="team-member scroll-animation">
                       <div class="member-avatar">
                         <img src="/images/avatar-3.png">
                       </div>
@@ -260,7 +260,7 @@
                     </div>
                   </a-col>
                   <a-col :span="24" :sm="12" :md="8" :lg="4" class="text-center">
-                    <div class="team-member">
+                    <div class="team-member scroll-animation">
                       <div class="member-avatar">
                         <img src="/images/avatar-4.png">
                       </div>
@@ -271,7 +271,7 @@
                     </div>
                   </a-col>
                   <a-col :span="24" :sm="12" :md="8" :lg="4" class="text-center">
-                    <div class="team-member">
+                    <div class="team-member scroll-animation">
                       <div class="member-avatar">
                         <img src="/images/avatar-5.png">
                       </div>
@@ -401,6 +401,27 @@ export default {
       }
       
       this.lastScrollTop = scrollTop;
+      
+      // 检查元素是否在可视区域内，如果是则添加动画类
+      this.checkScrollAnimation();
+    },
+    
+    // 添加检查滚动动画的方法
+    checkScrollAnimation() {
+      const animatedElements = document.querySelectorAll('.scroll-animation:not(.animated)');
+      
+      animatedElements.forEach(element => {
+        const elementTop = element.getBoundingClientRect().top;
+        const elementVisible = 150; // 元素顶部距离视口底部的触发距离
+        
+        if (elementTop < window.innerHeight - elementVisible) {
+          element.classList.add('animated');
+        }
+      });
+    },
+    initScrollAnimation() {
+      // 初始检查一次，处理页面加载时已在视口内的元素
+      this.checkScrollAnimation();
     }
   },
   mounted() {
@@ -409,9 +430,14 @@ export default {
     this.$nextTick(() => {
       this.handleScroll();
     });
+    
+    // 添加滚动监听
+    this.initScrollAnimation();
+    window.addEventListener('scroll', this.checkScrollAnimation);
   },
   beforeDestroy() {
-    window.removeEventListener('scroll', this.handleScroll);
+    // 移除滚动监听，防止内存泄漏
+    window.removeEventListener('scroll', this.checkScrollAnimation);
   }
 };
 </script>
@@ -583,6 +609,39 @@ export default {
     transition: all 0.3s ease;
     cursor: pointer;
   }
+}
+
+/* 滚动动画相关样式 */
+.scroll-animation {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.5s ease-out;
+}
+
+.scroll-animation.animated {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 为不同元素设置不同的延迟，实现错落动画效果 */
+.problem-card.scroll-animation {
+  transition-delay: 0.1s;
+}
+
+.widget-1.scroll-animation {
+  transition-delay: 0.1s;
+}
+
+.feature-card.scroll-animation {
+  transition-delay: 0.1s;
+}
+
+.team-card.scroll-animation {
+  transition-delay: 0.1s;
+}
+
+.team-member.scroll-animation {
+  transition-delay: 0.1s;
 }
 
 </style>

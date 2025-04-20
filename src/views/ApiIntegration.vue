@@ -29,135 +29,140 @@
           
           <div class="sdk-content">
             <div class="sdk-step">
+              
               <div class="step-number">1</div>
               <div class="step-content">
-                <h4>安装ModelSafety SDK</h4>
+                <h4>安装ModelSafety SDK：从pip安装</h4>
                 <div class="code-block-container">
                   <div class="code-block">
-                    <pre><code># 方法一：从pip安装（即将推出）
-pip install modelsafety
-
-# 方法二：从GitHub安装
-git clone https://github.com/Curreny/modelsafety-sdk.git
-cd modelsafety-sdk
-pip install -e .</code></pre>
-                    <a-button class="copy-btn" type="link" @click="copyText('git clone https://github.com/Curreny/modelsafety-sdk.git\ncd modelsafety-sdk\npip install -e .')">
+                    <pre><code class="python">pip install modelsafety==0.1.2</code></pre>
+                    <a-button class="copy-btn" type="link" @click="copyText('pip install modelsafety==0.1.2')">
                       <i class="fas fa-copy"></i> 复制
                     </a-button>
               </div>
               </div>
-                <p class="step-desc">或者下载SDK压缩包，解压后运行 <code>pip install .</code> 进行安装</p>
+
+                <h4>不安装的方式（适合快速试用）</h4>
+                <div class="code-block-container">
+                  <div class="code-block">
+                    <pre><code class="python">git clone https://github.com/Curreny/modelsafety-sdk.git
+cd modelsafety-sdk
+
+# 直接运行示例
+python demo1.py #题库生成
+python demo2.py #题目变形
+python demo3.py #模型测试与审核</code></pre>
+                    <a-button class="copy-btn" type="link" @click="copyText('git clone https://github.com/Curreny/modelsafety-sdk.git\ncd modelsafety-sdk\n# 直接运行示例\npython demo1.py #题库生成\npython demo2.py #题目变形\npython demo3.py #模型测试与审核')">
+                      <i class="fas fa-copy"></i> 复制
+                    </a-button>
               </div>
-            </div>
-            
+              </div>
+              </div>
+          </div>
+          
             <div class="sdk-step">
               <div class="step-number">2</div>
               <div class="step-content">
-                <h4>配置服务器地址</h4>
+                <h4>快速开始</h4>
                 <div class="code-block-container">
                   <div class="code-block">
-                    <pre><code>from modelsafety import ModelSafetyClient
-
-# 初始化客户端
-client = ModelSafetyClient(base_url='http://localhost:5000')</code></pre>
-                    <a-button class="copy-btn" type="link" @click="copyText('from modelsafety import ModelSafetyClient\n\n# 初始化客户端\nclient = ModelSafetyClient(base_url=\'http://localhost:5000\')')">
+                    <pre><code class="python">from modelsafety import ModelSafetyClient
+client = ModelSafetyClient()</code></pre>
+                    <a-button class="copy-btn" type="link" @click="copyText('from modelsafety import ModelSafetyClient\nclient = ModelSafetyClient()')">
                       <i class="fas fa-copy"></i> 复制
                     </a-button>
+              </div>
+              </div>
+              </div>
             </div>
-          </div>
-                <p class="step-desc">默认连接本地服务器，也可以指定远程API地址</p>
-            </div>
-          </div>
 
             <div class="sdk-step">
               <div class="step-number">3</div>
               <div class="step-content">
                 <h4>使用SDK功能</h4>
-                <div class="code-block-container">
-                  <div class="code-block">
-                    <pre><code># 生成题库
-question_data = {
-    "typesRequest": [
-        {"type": "single", "count": 10},
-        {"type": "judge", "count": 5},
-        {"type": "essay", "count": 3}
-    ]
-}
-result = client.generate_questions_directly(question_data)
-
-# 变形题目
-transform_data = {
-    "questions": result.get("data", [])[:3],  # 选择前3个题目
-    "method": "语序变换"
-}
-transformed = client.transform_questions_directly(transform_data)
-
-# 审核模型响应
-audit_data = {
-    "questions": result.get("data", [])[:1],  # 选择1个题目测试
-    "models": ["glm-4-plus"],
-    "auditMode": "rule-based"
-}
-audit_result = client.audit_model_directly(audit_data)</code></pre>
-                    <a-button class="copy-btn" type="link" @click="copyText(sdkUsageExample)">
-                      <i class="fas fa-copy"></i> 复制
+                
+                <!-- 将原本下方的SDK功能和示例部分移到这里 -->
+                <a-tabs default-active-key="1" @change="handleTabChange">
+                  
+                  <a-tab-pane key="1" tab="问题生成">
+                    <div class="markdown-block">
+                      <ul>
+                        <li><code>single</code>: 单选题</li>
+                        <li><code>judge</code>: 判断题</li>
+                        <li><code>essay</code>: 简答题</li>
+                        <li><code>count</code>: 对应题型的题目数量</li>
+                      </ul>
+                    </div>
+                    <div class="sdk-example">
+                      <div class="code-block-container">
+                        <div class="code-block">
+                          <pre><code class="python">{{ questionGenerationExample }}</code></pre>
+                          <a-button class="copy-btn" type="link" @click="copyText(questionGenerationExample)">
+                            <i class="fas fa-copy"></i> 复制
+                          </a-button>
+              </div>
+            </div>
+          </div>
+                  </a-tab-pane>
+                  
+                  <a-tab-pane key="2" tab="题目变形">
+                    <div class="markdown-block">
+                      <ul>
+                        <li><code>answer</code>: 题目标注答案</li>
+                        <li><code>domain</code>: 题目领域</li>
+                        <li><code>id</code>: 题目id</li>
+                        <li><code>options</code>: 题目选项（可选）</li>
+                        <li><code>prompt</code>: 题目描述</li>
+                        <li><code>source</code>: 题目来源</li>
+                        <li><code>type</code>: 题目类型</li>
+                        <li><code>method</code>: 变形方法，可选<code>语序变换</code>, <code>同义词替换</code>, <code>选项扰动</code>, <code>上下文调整</code>, <code>情感立场转换</code>, <code>噪声注入</code></li>
+                      </ul>
+                    </div>
+                    <div class="sdk-example">
+                      <div class="code-block-container">
+                        <div class="code-block">
+                          <pre><code class="python">{{ questionTransformExample }}</code></pre>
+                          <a-button class="copy-btn" type="link" @click="copyText(questionTransformExample)">
+                            <i class="fas fa-copy"></i> 复制
+                          </a-button>
+                        </div>
+            </div>
+          </div>
+                  </a-tab-pane>
+                  
+                  <a-tab-pane key="3" tab="审核结果">
+                    <div class="markdown-block">
+                      <ul>
+                        <li><code>ID</code>: 题目ID</li>
+                        <li><code>题型</code>: 题目类型</li>
+                        <li><code>问题</code>: 题目描述</li>
+                        <li><code>答案</code>: 题目标准答案</li>
+                        <li><code>领域</code>: 题目领域</li>
+                        <li><code>来源</code>: 题目来源</li>
+                        <li><code>选项A</code>: 题目选项A（可选）</li>
+                        <li><code>选项B</code>: 题目选项B（可选）</li>
+                        <li><code>选项C</code>: 题目选项C（可选）</li>
+                        <li><code>选项D</code>: 题目选项D（可选）</li>
+                        <li><code>models</code>: 模型列表，可选<code>glm-4-plus</code>,<code>glm-4-0520</code>,<code>glm-4-airx</code>,<code>glm-zero-preview</code>,<code>glm-4-air</code>,<code>glm-4-long</code>,<code>glm-4-9b</code></li>
+                        <li><code>auditMode</code>: 审核模式，可选<code>rule-based</code>,<code>model-assisted</code></li>
+                      </ul>
+                    </div>
+                    <div class="sdk-example">
+                      <div class="code-block-container">
+                        <div class="code-block">
+                          <pre><code class="python">{{ auditResponsesExample }}</code></pre>
+                          <a-button class="copy-btn" type="link" @click="copyText(auditResponsesExample)">
+                            <i class="fas fa-copy"></i> 复制
                 </a-button>
               </div>
+                      </div>
                 </div>
+                  </a-tab-pane>
+                  
+                </a-tabs>
               </div>
             </div>
           </div>
-        </a-card>
-      </a-col>
-    </a-row>
-
-    <!-- SDK功能和示例部分 -->
-    <a-row :gutter="24" class="mb-24">
-      <a-col :span="24">
-        <a-card :bordered="false">
-          <a-tabs default-active-key="1">
-            <a-tab-pane key="1" tab="问题生成">
-              <div class="sdk-example">
-                <h4>题目生成示例</h4>
-                <div class="code-block-container">
-                  <div class="code-block">
-                    <pre><code>{{ questionGenerationExample }}</code></pre>
-                    <a-button class="copy-btn" type="link" @click="copyText(questionGenerationExample)">
-                      <i class="fas fa-copy"></i> 复制
-                    </a-button>
-                  </div>
-                </div>
-          </div>
-            </a-tab-pane>
-            
-            <a-tab-pane key="2" tab="题目变形">
-              <div class="sdk-example">
-                <h4>题目变形示例</h4>
-                <div class="code-block-container">
-                  <div class="code-block">
-                    <pre><code>{{ questionTransformExample }}</code></pre>
-                    <a-button class="copy-btn" type="link" @click="copyText(questionTransformExample)">
-                      <i class="fas fa-copy"></i> 复制
-                </a-button>
-              </div>
-            </div>
-              </div>
-            </a-tab-pane>
-            
-            <a-tab-pane key="3" tab="审核结果">
-              <div class="sdk-example">
-                <h4>模型测试和审核示例</h4>
-                <div class="code-block-container">
-                  <div class="code-block">
-                    <pre><code>{{ auditResponsesExample }}</code></pre>
-                    <a-button class="copy-btn" type="link" @click="copyText(auditResponsesExample)">
-                      <i class="fas fa-copy"></i> 复制
-              </a-button>
-            </div>
-          </div>
-              </div>
-            </a-tab-pane>
-          </a-tabs>
         </a-card>
       </a-col>
     </a-row>
@@ -166,41 +171,18 @@ audit_result = client.audit_model_directly(audit_data)</code></pre>
 </template>
 
 <script>
+import hljs from 'highlight.js/lib/core';
+import python from 'highlight.js/lib/languages/python';
+
+// 注册Python语言
+hljs.registerLanguage('python', python);
+
 export default {
   name: 'ApiIntegration',
   data() {
     return {
-      // API示例代码内容
-      pipInstallCommand: 'pip install modelsafety',
-      apiKeyConfigExample: 'from modelsafety import ModelSafetyClient\n\nclient = ModelSafetyClient(base_url="http://localhost:5000")',
-      sdkUsageExample: `# 生成题库
-question_data = {
-    "typesRequest": [
-        {"type": "single", "count": 10},
-        {"type": "judge", "count": 5},
-        {"type": "essay", "count": 3}
-    ]
-}
-result = client.generate_questions_directly(question_data)
-
-# 变形题目
-transform_data = {
-    "questions": result.get("data", [])[:3],  # 选择前3个题目
-    "method": "语序变换"
-}
-transformed = client.transform_questions_directly(transform_data)
-
-# 审核模型响应
-audit_data = {
-    "questions": result.get("data", [])[:1],  # 选择1个题目测试
-    "models": ["glm-4-plus"],
-    "auditMode": "rule-based"
-}
-audit_result = client.audit_model_directly(audit_data)`,
       questionGenerationExample: `from modelsafety import ModelSafetyClient
-
-# 初始化客户端
-client = ModelSafetyClient(base_url='http://localhost:5000')
+client = ModelSafetyClient()
 
 # 生成题库请求
 question_data = {
@@ -212,7 +194,7 @@ question_data = {
 }
 
 # 发送题库生成请求
-question_result = client.generate_questions_directly(question_data)
+question_result = client.generate_questions(question_data)
 
 # 打印生成结果
 print(f"生成成功，共获取到 {len(question_result.get('data', []))} 道题目")
@@ -228,9 +210,7 @@ with open("generated_questions.json", "w", encoding="utf-8") as f:
     json.dump(question_result, f, ensure_ascii=False, indent=2)
     print("已保存题目到 generated_questions.json")`,
       questionTransformExample: `from modelsafety import ModelSafetyClient
-
-# 初始化客户端
-client = ModelSafetyClient(base_url='http://localhost:5000')
+client = ModelSafetyClient()
 
 # 题目变形请求
 transform_data = {
@@ -266,7 +246,7 @@ transform_data = {
 }
 
 # 发送题目变形请求
-transform_result = client.transform_questions_directly(transform_data)
+transform_result = client.transform_questions(transform_data)
 
 # 打印变形结果
 print(f"变形成功，生成了 {len(transform_result.get('data', []))} 道新题目")
@@ -280,9 +260,7 @@ with open("transformed_questions.json", "w", encoding="utf-8") as f:
     json.dump(transform_result, f, ensure_ascii=False, indent=2)
     print("已保存变形题目到 transformed_questions.json")`,
       auditResponsesExample: `from modelsafety import ModelSafetyClient
-
-# 初始化客户端
-client = ModelSafetyClient(base_url='http://localhost:5000')
+client = ModelSafetyClient()
 
 # 模型审核请求
 audit_data = {
@@ -306,21 +284,19 @@ audit_data = {
 }
 
 # 发送模型审核请求
-audit_result = client.audit_model_directly(audit_data)
+audit_result = client.audit_model(audit_data)
 
 # 打印审核结果
 if audit_result and audit_result.get("success", False):
     summary = audit_result.get("summary", {})
-    print("\n审核摘要:")
-    for model, metrics in summary.items():
-        print(f"模型: {model}")
+    print("审核摘要：")
+    for metrics in summary.items():
         if isinstance(metrics, dict):
             for metric, value in metrics.items():
                 if isinstance(value, (int, float)):
                     print(f"  {metric}: {value:.2f}")
         else:
             print(f"  得分: {metrics:.2f}" if isinstance(metrics, (int, float)) else f"  结果: {metrics}")
-
 # 保存结果到json文件
 with open("audit_results.json", "w", encoding="utf-8") as f:
     import json
@@ -329,6 +305,14 @@ with open("audit_results.json", "w", encoding="utf-8") as f:
       // SDK下载状态
       isDownloading: false,
     }
+  },
+  mounted() {
+    this.applyHighlight(); // 初始化时应用高亮
+  },
+  updated() {
+    this.$nextTick(() => {
+      this.applyHighlight(); // 内容更新后重新应用高亮
+    });
   },
   methods: {
     // 下载SDK包
@@ -355,6 +339,25 @@ with open("audit_results.json", "w", encoding="utf-8") as f:
         this.$message.error('复制失败: ' + err);
       });
     },
+    
+    // 仅应用代码高亮，不添加行号
+    applyHighlight() {
+      // 搜索pre code元素进行高亮
+      let blocks = this.$el.querySelectorAll('pre code');
+      blocks.forEach((block) => {
+        // 高亮
+        hljs.highlightElement(block);
+      });
+    },
+    
+    // 处理Tab切换事件
+    handleTabChange(key) {
+      // 使用nextTick确保DOM已更新
+      this.$nextTick(() => {
+        // 切换Tab时重新应用高亮
+        this.applyHighlight();
+      });
+    }
   }
 }
 </script>
@@ -424,6 +427,7 @@ with open("audit_results.json", "w", encoding="utf-8") as f:
 
 .step-content {
   flex-grow: 1;
+  max-width: 90%;
 }
 
 .step-content h4 {
@@ -444,7 +448,7 @@ with open("audit_results.json", "w", encoding="utf-8") as f:
   position: relative;
   background-color: #f8f9fa;
   border-radius: 10px;
-  padding: 48px 24px 42px;
+  padding:48px 24px 4px;
   overflow: hidden;
   border: 1px solid #eaecef;
   margin: 24px 0;
@@ -494,9 +498,77 @@ with open("audit_results.json", "w", encoding="utf-8") as f:
   border-radius: 0;
 }
 
+/* GitHub风格代码高亮 */
+:deep(.hljs) {
+  background: transparent;
+  padding: 0;
+}
+
+:deep(.hljs-keyword) {
+  color: #d73a49;
+  font-weight: bold;
+}
+
+:deep(.hljs-string) {
+  color: #032f62;
+}
+
+:deep(.hljs-comment) {
+  color: #6a737d;
+  font-style: italic;
+}
+
+:deep(.hljs-function), :deep(.hljs-title.function_) {
+  color: #6f42c1;
+}
+
+:deep(.hljs-number) {
+  color: #005cc5;
+}
+
+:deep(.hljs-built_in) {
+  color: #e36209;
+}
+
+:deep(.hljs-params) {
+  color: #24292e;
+}
+
+:deep(.hljs-name), :deep(.hljs-tag) {
+  color: #22863a;
+}
+
+:deep(.hljs-attr) {
+  color: #6f42c1;
+}
+
+:deep(.hljs-literal) {
+  color: #005cc5;
+}
+
+:deep(.hljs-meta) {
+  color: #cb2431;
+}
+
+:deep(.hljs-variable) {
+  color: #24292e;
+}
+
+:deep(.hljs-title) {
+  color: #6f42c1;
+}
+
+:deep(.hljs-attr), :deep(.hljs-attribute) {
+  color: #005cc5;
+}
+
+:deep(.hljs-selector-tag) {
+  color: #22863a;
+}
+
 .copy-btn {
   position: absolute;
-  bottom: 12px;
+  top:45px;
   right: 12px;
   background-color: #3b82f6;
   z-index: 1;
@@ -568,4 +640,16 @@ code {
   font-size: 14.5px;
   color: #3b82f6;
 }
+
+.markdown-block {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 0px 0px;
+  margin: 10px 0px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.8;
+  color: #333;
+}
+
+/* 删除所有行号相关样式 */
 </style>

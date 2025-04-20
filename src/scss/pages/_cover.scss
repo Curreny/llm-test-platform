@@ -629,7 +629,7 @@
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(30px);
     }
 
     to {
@@ -763,6 +763,7 @@
         background: linear-gradient(to right, $color-primary, $color-secondary);
         border-radius: 3px;
     }
+
 }
 
 .footer-desc,
@@ -924,4 +925,49 @@
     &.widget-1-green .icon {
         background: linear-gradient(135deg, #52C41A, #389E0D);
     }
+}
+
+// 添加滚动时元素从下往上浮动显示的动画
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// 添加滚动时触发的动画类
+.scroll-animation {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.scroll-animation.animated {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+// 应用动画到特定元素
+.problem-card,
+.widget-1,
+.feature-card,
+.team-card,
+.team-member {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.problem-card.animated,
+.widget-1.animated,
+.feature-card.animated,
+.team-card.animated,
+.team-member.animated {
+    opacity: 1;
+    transform: translateY(0);
 }

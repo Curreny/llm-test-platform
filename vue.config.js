@@ -5,7 +5,7 @@ module.exports = {
 		config
 			.plugin('html')
 			.tap(args => {
-				args[0].title = 'llm-test-platform'
+				args[0].title = '天枢智评 llm-test-platform'
 				return args
 			})
 	},
@@ -14,7 +14,7 @@ module.exports = {
 		port: 8081,
 		proxy: {
 			'/api': {
-				target: 'http://localhost:5000',
+				target: 'http://starvii.tpddns.cn:9004',
 				changeOrigin: true
 			}
 		}

@@ -1,15 +1,9 @@
 from flask import Flask, redirect, send_from_directory, jsonify, request, send_file
-import os
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_cors import CORS
 import logging
-from io import BytesIO
-import json
 import time
-import shutil
-import zipfile
-import functools
-
+import requests
 # 导入题库管理模块
 from question_generate import QuestionGenerateManager, ExportManager
 # 导入题目扩展模块
@@ -19,9 +13,33 @@ from question_audit import SUPPORTED_MODELS, batch_process_questions
 # 导入报告生成模块
 from report_generator import ReportGenerator
 
-# 配置日志
-logging.basicConfig(level=logging.DEBUG)
+# 创建 logger
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)  # 设置最低等级，记录所有信息
+
+# 日志格式
+formatter = logging.Formatter('[%(asctime)s] %(levelname)s: %(message)s')
+
+# 文件 Handler（日志写入 app.log）
+file_handler = logging.FileHandler('app.log', mode='a', encoding='utf-8')
+file_handler.setLevel(logging.DEBUG)  # 也设成最低等级
+file_handler.setFormatter(formatter)
+
+# 控制台 Handler（可选，输出到终端）
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
+console_handler.setFormatter(formatter)
+
+# 添加 Handler
+logger.addHandler(file_handler)
+logger.addHandler(console_handler)
+
+# # 示例输出
+# logger.debug("调试信息")
+# logger.info("一般信息")
+# logger.warning("警告信息")
+# logger.error("错误信息")
+# logger.critical("严重错误")
 
 app = Flask(__name__, static_folder='../dist/static', static_url_path='/static')
 app.wsgi_app = ProxyFix(app.wsgi_app)
@@ -37,87 +55,21 @@ STARTUP_TIMESTAMP = str(int(time.time()))
 
 @app.route('/api/sdk/download', methods=['GET'])
 def download_sdk():
-    """下载SDK包"""
-    temp_dir = None
+    """从 PyPI 获取 modelsafety 最新版本的源码包下载链接，并重定向触发下载"""
     try:
-        # 创建临时目录来打包SDK
-        temp_dir = os.path.join(os.path.dirname(__file__), 'temp_sdk')
-        if os.path.exists(temp_dir):
-            shutil.rmtree(temp_dir)
-        os.makedirs(temp_dir)
-        
-        # 复制SDK文件到临时目录
-        sdk_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'sdk')
-        shutil.copytree(sdk_dir, os.path.join(temp_dir, 'modelsafety-sdk'))
-        
-        # 创建内存流而不是文件
-        memory_file = BytesIO()
-        
-        # 直接写入内存流
-        with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            for root, dirs, files in os.walk(os.path.join(temp_dir, 'modelsafety-sdk')):
-                for file in files:
-                    file_path = os.path.join(root, file)
-                    zipf.write(
-                        file_path, 
-                        arcname=os.path.relpath(file_path, temp_dir)
-                    )
-        
-        # 重置内存流位置
-        memory_file.seek(0)
-        
-        # 清理临时文件夹，在发送文件之前
-        if os.path.exists(temp_dir):
-            shutil.rmtree(temp_dir)
-            temp_dir = None
-        
-        # 从内存流发送文件
-        return send_file(
-            memory_file, 
-            as_attachment=True,
-            download_name='modelsafety-sdk.zip',
-            mimetype='application/zip'
-        )
-    
+        response = requests.get("https://pypi.org/pypi/modelsafety/json")
+        response.raise_for_status()
+        data = response.json()
+        version = data["info"]["version"]
+        for file in data["urls"]:
+            if file["packagetype"] == "sdist":
+                tarball_url = file["url"]
+                print(f"最新版本：{version}，准备跳转下载链接")
+                return redirect(tarball_url)
+        return "未找到源码分发的安装包。", 404
     except Exception as e:
-        logger.error(f"下载SDK时出错: {str(e)}")
-        return jsonify({
-            'success': False,
-            'message': f'下载SDK时出错: {str(e)}'
-        }), 500
-    
-    finally:
-        # 确保临时目录被清理
-        if temp_dir and os.path.exists(temp_dir):
-            try:
-                shutil.rmtree(temp_dir)
-            except Exception as e:
-                logger.error(f"清理临时目录时出错: {str(e)}")
+        return "获取 SDK 包信息失败，请稍后重试。", 500
 
-@app.route('/api/sdk/docs', methods=['GET'])
-def get_sdk_docs():
-    """获取SDK文档"""
-    try:
-        # 这里简单返回README.md的内容作为文档
-        readme_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'sdk', 'README.md')
-        
-        with open(readme_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-        
-        return jsonify({
-            'success': True,
-            'data': {
-                'content': content,
-                'format': 'markdown'
-            }
-        })
-    
-    except Exception as e:
-        logger.error(f"获取SDK文档时出错: {str(e)}")
-        return jsonify({
-            'success': False,
-            'message': f'获取SDK文档时出错: {str(e)}'
-        }), 500
 
 # ==================== 审核模块 API 路由 ====================
 
