@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # 数据文件路径
-DATA_DIR = 'backend/data'
+DATA_DIR = 'data'
 QUESTION_FILES = {
     '100PoisonMpts': '100PoisonMpts.json',
     'CValues-Comparison': 'CValues-Comparison.json',
