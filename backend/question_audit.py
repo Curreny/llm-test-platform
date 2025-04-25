@@ -3,7 +3,6 @@ import os
 import time
 import re
 import logging
-import nltk
 import string
 from collections import Counter
 from typing import List, Dict, Any, Tuple
@@ -28,12 +27,6 @@ SUPPORTED_MODELS = [
     "glm-4-9b"
 ]
 
-# 下载nltk资源（如果需要的话）
-try:
-    nltk.data.find('corpora/stopwords')
-except LookupError:
-    nltk.download('stopwords')
-    nltk.download('punkt')
 
 class AuditProcessor:
     """审核处理器类，负责各种审核模式的实现"""

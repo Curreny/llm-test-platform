@@ -4,6 +4,7 @@ from flask_cors import CORS
 import logging
 import time
 import requests
+import os
 # 导入题库管理模块
 from question_generate import QuestionGenerateManager, ExportManager
 # 导入题目扩展模块
@@ -41,7 +42,13 @@ logger.addHandler(console_handler)
 # logger.error("错误信息")
 # logger.critical("严重错误")
 
-app = Flask(__name__, static_folder='../dist/static', static_url_path='/static')
+# 当前 app.py 所在目录
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+# Vue 打包后的前端目录
+DIST_DIR = os.path.abspath(os.path.join(BASE_DIR, '../frontend/dist'))
+
+app = Flask(__name__, static_folder=os.path.join(DIST_DIR, 'static'), static_url_path='/static')
 app.wsgi_app = ProxyFix(app.wsgi_app)
 CORS(app)
 
@@ -569,14 +576,17 @@ def preview_report():
 @app.route('/sign-in')
 @app.route('/sign-up')
 
+def frontend_routes(path=None):
+    return send_from_directory(DIST_DIR, 'index.html')
 
-def frontend_routes(path=None, subpath=None):
-    return send_from_directory('../dist', 'index.html')
-
-# 处理静态资源
+# 处理静态资源（非 /static 的文件，如 favicon.ico）
 @app.route('/<path:filename>')
 def serve_static(filename):
-    return send_from_directory('../dist', filename)
+    file_path = os.path.join(DIST_DIR, filename)
+    if os.path.exists(file_path):
+        return send_from_directory(DIST_DIR, filename)
+    return jsonify({"code": 404, "message": "Resource not found", "data": {}}), 404
+
 
 # 默认错误处理
 @app.errorhandler(404)
