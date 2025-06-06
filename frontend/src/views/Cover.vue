@@ -9,12 +9,10 @@
         </div>
         <div class="navbar-links">
           <router-link to="/" class="nav-link active">主页</router-link>
-          <router-link to="/question-generate" class="nav-link">观测题库生成</router-link>
-          <router-link to="/question-expansion" class="nav-link">观测题库拓展</router-link>
-          <router-link to="/data-audit" class="nav-link">模型响应检测</router-link>
-          <router-link @click.native="navigateTo('/data-audit#results-preview')" to="/data-audit" class="nav-link">检测结果预览</router-link>
-          <router-link @click.native="navigateTo('/data-audit#report-generation')" to="/data-audit" class="nav-link">报告生成与预览</router-link>
-          <router-link to="/api-integration" class="nav-link">观测调用</router-link>
+          <router-link to="/"><a @click.prevent="scrollToElement('#introduction')" class="nav-link">平台介绍</a></router-link>
+          <router-link to="/"><a @click.prevent="scrollToElement('#achievements')" class="nav-link">成果展示</a></router-link>
+          <router-link to="/"><a @click.prevent="scrollToElement('#team-introduction')" class="nav-link">团队介绍</a></router-link>
+          <router-link to="/"><a @click.prevent="scrollToElement('#connection')" class="nav-link">联系我们</a></router-link>
         </div>
         <div class="navbar-actions">
           <a href="#" class="nav-icon">
@@ -33,27 +31,20 @@
       
       <!-- 标题介绍部分 -->
       <div class="hero-content">
-        <div class="hero-left">
-          <div class="platform-icon mb-10">
-          </div>
-          <h1 class="hero-title">天枢智评&nbsp;—</h1>
-          <h1 class="hero-title">大模型综合观测展示平台</h1>
-
-          <div class="hero-actions">
-            <a-button @click="scrollToElement('#product')" type="primary" size="large" shape="round" class="hero-btn">
-              <span>立即开始&nbsp;🚀&nbsp;🚀</span>
-            </a-button>
-          </div>
-        </div>
-        <div class="hero-right">
-          <img src="/images/bg.png" alt="大模型综合观测展示平台" class="hero-image">
+        <h1 class="hero-title">天枢智评&nbsp;—&nbsp;大模型综合观测展示平台</h1>
+        <h4 style="color: white;">第十六届中国大学生服务外包创新创业大赛A20</h4>
+        <div class="hero-actions">
+          <a-button @click="scrollToElement('#product')"shape="round" class="hero-btn">
+            <span>立即开始</span>
+          </a-button>
         </div>
       </div>
     </div>
 
+    
     <!-- 内容区域 -->
     <div class="content-section">
-      <div class="cover-content">
+      <div class="cover-content" id="introduction">
         <!-- 问题说明卡片 -->
         <a-row :gutter="24" class="mb-24">
           <a-col :span="24">
@@ -126,10 +117,10 @@
           </a-col>
         </a-row>
 
-        <div class="scroll-animation">
+        <div class="scroll-animation" id="achievements">
           <!-- 用户期望部分 - 六个卡片 -->
           <div class="card-header mb-15" id="product">
-            <h2 class="font-bold">📊平台总览</h2>
+            <h2 class="font-bold">📊成果展示</h2>
           </div>
           <a-row :gutter="24" type="flex" align="stretch">
             <!-- 观测题库生成模块 -->
@@ -222,7 +213,7 @@
           </a-row>
         </div>
 
-        <a-row :gutter="24" type="flex" align="stretch" class="scroll-animation">
+        <a-row :gutter="24" type="flex" align="stretch" class="scroll-animation" id="team-introduction">
           <a-col :span="24" class="mb-50">
             <a-card :bordered="false" class="team-card">
               <div class="card-header mb-15">
@@ -296,7 +287,7 @@
     </div>
 
     <!-- 新的页脚样式 -->
-    <div class="footer-section">
+    <div class="footer-section"id="connection">
       <div class="footer-content">
         <div class="footer-column-header">
           <h3 class="footer-title">飞舞不会coding团队</h3>
@@ -371,24 +362,18 @@ export default {
     scrollToElement(selector) {
       const element = document.querySelector(selector);
       if (element) {
+        // 获取导航栏高度
+        const navbar = document.querySelector('.hero-navbar');
+        const navbarHeight = navbar ? navbar.offsetHeight : 0;
+        
+        // 计算元素的实际位置（考虑当前滚动位置）
+        const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+        
+        // 滚动到元素位置，并减去导航栏高度和一些额外空间
         window.scrollTo({
-          top: element.offsetTop + 1000,
+          top: elementPosition - navbarHeight - 60, // 减去导航栏高度和一些额外间距
           behavior: 'smooth'
         });
-      }
-    },
-    navigateTo(path) {
-      if (path.includes('#')) {
-        const parts = path.split('#');
-        if (parts[0] === '' || parts[0] === '/') {
-          // 如果是当前页面内的锚点
-          this.scrollToElement('#' + parts[1]);
-        } else {
-          // 如果是其他页面的锚点
-          this.$router.push(path);
-        }
-      } else {
-        this.$rouer.push(path);
       }
     },
     handleScroll() {
@@ -450,6 +435,7 @@ export default {
     window.removeEventListener('scroll', this.checkScrollAnimation);
   }
 };
+
 </script>
 
 <style lang="scss" scoped>
