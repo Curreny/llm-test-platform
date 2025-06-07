@@ -4532,16 +4532,12 @@ export default {
   }
 }
 
-.audit-table .ant-table-expanded-row-fixed {
-  width: 100% !important; 
-  margin: 0 !important;
+.audit-table{
+  margin-bottom: 24px;
+  width: 100%; // 确保宽度占满父容器
+  overflow-x: auto; // 当内容溢出时提供水平滚动
+  
 }
-
-.audit-table .ant-table-tbody > tr.ant-table-expanded-row > td {
-  padding: 16px;
-  transition: all 0.3s;
-}
-
 .detail-button {
   transition: transform 0.3s ease;
 }
